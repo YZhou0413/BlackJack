@@ -1,0 +1,14 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "BlackJack_Gruppe7"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  ".", "src",
+]
+addopts = [
+    "--import-mode=importlib",
+]
