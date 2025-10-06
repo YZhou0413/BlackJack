@@ -6,21 +6,32 @@
 # Software Assignment                #
 ######################################
 
-from player import Player
-from cards import Card
+from src.core.player import Player
+from src.core.cards import Card
 import random
 
 class Game:
-
-    def __init__(self):
+    gamer_stat = ["START", "WIN", "LOST", "BUST", "PUSH", "not yet"]
+    def __init__(self, user):
         self.deck = self.create_deck()
-        self.shuffle_deck
+        self.shuffle_deck()
+        self.dealer = Dealer.dealer()
+        self.dealer.hand = []
+        self.dealer.status = "START"
+        self.player = user
+        self.player.hand = []
+        self.player.status = "START"
+        self.bet = 100
+        self.ai_play = False
+        self.phase = 0
+
 
     def create_deck(self):
         deck = []
         for s in Card.SUITS:
             for r in Card.RANKS:
-                deck.append((r, s))
+                deck.append(Card(r, s))
+        return deck
 
     def shuffle_deck(self):
         random.shuffle(self.deck)
@@ -28,14 +39,21 @@ class Game:
     def draw_card(self):
         if self.deck:
             return self.deck.pop()
-        #TODO add card to hand
-    
+        
+        """if who is self.player:
+            
+                """
+    def add_on_click(self):
+        self.player.hand.append(self.draw_card())
+        if self.is_bust(self.player):
+                self.phase_up()  #phase 2 -> Dealer
+        
 
-    def calculate_hand(self, hand):    
+    def calculate_hand(self, who):    
         score = 0
         aces = 0
 
-        for c in hand:
+        for c in who.hand:
             if c.rank == "A":
                 score += 11
                 aces += 1
@@ -50,10 +68,12 @@ class Game:
         
         return score
             
+    def phase_up(self):
+        self.phase += 1
 
-
-    def is_bust(self):
-        if self.calculate_hand() > 21:
+    def is_bust(self, who):
+        if self.calculate_hand(who) > 21:
+            self.update_status(who, "BUST")
             return True
         return False
 
@@ -66,31 +86,68 @@ class Game:
         pass
 
     def initialize_game(self):
-        pass
+        self.player.place_bet()
+
+        
 
     def start_game(self):
-        pass
+        self.phase_up() #phase 1 -> player
+        self.deal_initial_hands(self.player)
+        self.deal_initial_hands(self.dealer)
 
     def place_bet(self):
-        pass
+        self.player.score - self.bet
 
-    def deal_initial_hands(self):
-        pass
+    def add_bet(self):
+        """
+        when +100 clicked, self.bet += 100"""
+        if self.player.score > self.bet:
+            self.bet += 100
+        else:
+            print("ur broke")
 
-    def draw_card(self):
-        pass
+
+    def minus_bet(self):
+        if self.bet > 100:
+            self.bet -= 100
+        else:
+            print("u have to bet something")
+
+    def reset_round(self):
+        self.bet = 100
+
+
+    def deal_initial_hands(self, who):
+        who.hand.append(self.draw_card(who))
+        who.hand.append(self.draw_card(who))
 
     def player_stands(self):
-        pass
+        self.phase_up() #phase 2 -> dealer
+    
+    def dealer_draw(self):
+        if self.phase != 2:
+            pass
+        else:
+            while self.calculate_hand(self.dealer) < 17: 
+                self.dealer.hand.append(self.draw_card())
+                if self.is_bust(self.dealer):
+                    self.update_status(self.dealer, "BUST")
+                    self.phase_up() # phase 3 -> calc score
+                
+
+    def update_status(self, who, status):
+        who.status = status
 
     def save_score(self):
         pass
+    #update user score in json
 
     def exit_game(self):
         pass
 
     def load_allscores(self):
         pass
+    #for scoreboard, migrate later
 
 
 

@@ -14,15 +14,29 @@ class Player:
         Creates a new Player. Think about which pieces of information you need at this time
         (e.g. name, highscore, input method) and add them as arguments.
         '''
-        pass
+        self.name = name
+        self.password = "0000"
+        self.score = 1000
 
     def getScore():
         pass
 
     def getUsername():
         pass
-
     
+    def set_password(self, new_password):
+        pass
+
+    def set_score(self, new_score):
+        self.score = new_score
+
+    def update_from_input(self, new_info, new_val):
+        pass
+
+    def update_to_somewhere(self, info_to_save, new_val):
+        pass 
+
+
 
 
 if __name__ == '__main__':
