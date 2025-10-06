@@ -16,6 +16,14 @@ class Player:
         '''
         pass
 
+    def getScore():
+        pass
+
+    def getUsername():
+        pass
+
+    
+
 
 if __name__ == '__main__':
     '''

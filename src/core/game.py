@@ -7,71 +7,91 @@
 ######################################
 
 from player import Player
-
+from cards import Card
+import random
 
 class Game:
 
     def __init__(self):
-        '''
-        Creates a new game session. Think about which pieces of information you need at this time
-        (e.g. players, game mode, time limit, ...) and add them as arguments.
-        '''
+        self.deck = self.create_deck()
+        self.shuffle_deck
+
+    def create_deck(self):
+        deck = []
+        for s in Card.SUITS:
+            for r in Card.RANKS:
+                deck.append((r, s))
+
+    def shuffle_deck(self):
+        random.shuffle(self.deck)
+        
+    def draw_card(self):
+        if self.deck:
+            return self.deck.pop()
+        #TODO add card to hand
+    
+
+    def calculate_hand(self, hand):    
+        score = 0
+        aces = 0
+
+        for c in hand:
+            if c.rank == "A":
+                score += 11
+                aces += 1
+            elif c.rank == "J" or "Q" or "K":
+                score += 10
+            else:
+                score += int(c.rank)
+        
+        while score > 21 and aces > 0:
+            score -= 10
+            aces -= 1
+        
+        return score
+            
+
+
+    def is_bust(self):
+        if self.calculate_hand() > 21:
+            return True
+        return False
+
+
+
+    def login_user(self):
         pass
 
-    def add_player(self, player: Player):
-        '''
-        Adds a Player object as a player for the current game session.
-        '''
+    def logout_user(self):
         pass
 
-    def save_game(self, filename):
-        '''
-        '''
+    def initialize_game(self):
         pass
 
-    @classmethod
-    def load_game(cls, filename) -> 'Game':
-        '''
-        '''
-        game_object = ...
-        ...
-        return game_object
-
-    def finish_game(self):
-        '''
-        Clean-up code after a game session ends.
-        '''
+    def start_game(self):
         pass
 
-    def win_condition(self):
-        '''
-        What needs to be true so that a player wins?
-        '''
+    def place_bet(self):
         pass
 
-    def lose_condition(self):
-        '''
-        What needs to be true so that a player loses?
-        '''
+    def deal_initial_hands(self):
         pass
 
-    def step(self):
-        '''
-        One player turn (for turn-based games), player input (for single-player games) or frame (for Space Invaders).
-        '''
+    def draw_card(self):
         pass
 
-    def get_current_state(self):
-        '''
-        Returns the current state of the game session.
-        '''
+    def player_stands(self):
         pass
 
-    def run(self):
-        '''
-        Runs a game session interactively until a win (or lose) condition is reached.
-        '''
+    def save_score(self):
         pass
+
+    def exit_game(self):
+        pass
+
+    def load_allscores(self):
+        pass
+
 
 
 if __name__ == '__main__':
