@@ -18,6 +18,7 @@ class Player:
         self.password = "0000"
         self.score = 1000
 
+
     def getScore():
         pass
 
@@ -36,7 +37,12 @@ class Player:
     def update_to_somewhere(self, info_to_save, new_val):
         pass 
 
-
+class Dealer(Player):
+    """Temporary for test"""
+    def __init__(self):
+        super().__init__("Dealer")
+        self.hand = []
+        self.status = "START"
 
 
 if __name__ == '__main__':

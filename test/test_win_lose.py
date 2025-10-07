@@ -41,3 +41,10 @@ def test_reset_round(game, dummy_deck):
     assert game.dealer.status == "START"
     assert len(game.player.hand) == 0
     assert len(game.dealer.hand) == 0
+
+def test_dealer_draw(game, dummy_deck):
+    pass
+
+
+def test_calc_winner(game,dummy_deck,dummy_player):
+    pass 

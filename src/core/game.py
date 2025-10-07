@@ -6,27 +6,24 @@
 # Software Assignment                #
 ######################################
 
-from src.core.player import Player
-from src.core.cards import Card
+from player import Player, Dealer
+from cards import Card
 import random
+from pprint import pprint
+
+dummy_player = Player("dummy")
 
 
-class Dealer(Player):
-    """Temporary for test"""
-    def __init__(self):
-        super().__init__("Dealer")
-        self.hand = []
-        self.status = "START"
 
 class Game:
-    gamer_stat = ["START", "WIN", "LOST", "BUST", "PUSH", "not yet"]
+    gamer_stat = ["START", "WIN", "LOST", "BUST", "PUSH", "in-game"]
     def __init__(self, user):
         self.deck = self.create_deck()
         self.shuffle_deck()
         self.dealer = Dealer()
         self.dealer.hand = []
         self.dealer.status = "START"
-        self.player = user
+        self.player = user #make sure is a player obj
         self.player.hand = []
         self.player.status = "START"
         self.bet = 100
@@ -35,7 +32,9 @@ class Game:
         self.initialize_game()
 
 
-
+    """------------------print card------------"""
+    def print_card(self, hand_owner):
+        print(hand_owner.name, [(card.rank, card.suit) for card in hand_owner.hand])
     '''------------------Deck------------------'''
 
     def create_deck(self):                                              #Creates Deck
@@ -70,38 +69,53 @@ class Game:
 
     def initialize_game(self):                                          #New game / Start Game / Play Again  --> start_game() and place_bet() + / - and reset_round()
         self.reset_round()
-        self.player.place_bet()
+        self.place_bet()
         self.start_game()
+        pprint(vars(self))
 
         
     def start_game(self):                                               #Bet is Placed --> Deal Cards --> deal_initial_hands()
-        self.phase_up() #phase 1 -> player
+         #phase 1 -> player
+        
         self.deal_initial_hands(self.player)
+        self.print_card(self.player)
         self.deal_initial_hands(self.dealer)
+        self.print_card(self.dealer)
+        
+        self.dealer.status = "in-game"
+        self.player.status = "in-game"
 
     def deal_initial_hands(self, hand_owner):                           #Cards gotten --> Stand / Hit Button possible
         hand_owner.hand = [self.draw_card(), self.draw_card()]
 
 
         
-    '''------------------Player actions------------------'''   
+    '''------------------Player actions <phase 1>------------------'''   
 
     def add_on_click(self):                                             #Hit --> draw_card() and if is_bust() --> dealer_draw()
+        if self.phase != 1:
+            return
         self.player.hand.append(self.draw_card())
         if self.is_bust(self.player):
+            self.update_status(self.player, "BUST")
             self.phase_up()  #phase 2 -> Dealer
             self.dealer_draw() #reveal dealer card -> dealer actions
-
+        self.print_card(self.player)
+        print(self.calculate_hand(self.player))
+        
     def player_stands(self):                                            #Stand --> dealer_draw()
         self.phase_up() #phase 2 -> dealer
         self.dealer_draw()
+        self.print_card(self.player)
+        print(self.calculate_hand(self.player))
         
 
 
-    '''------------------Place bets------------------'''   
+    '''------------------Place bets <phase 0>------------------'''   
 
     def place_bet(self):                                                #Places bet
         self.player.score -= self.bet
+        self.phase_up()
 
     def add_bet(self):                                                  # + Button to higher bet
         """
@@ -126,18 +140,21 @@ class Game:
         if self.phase != 2:
             pass
         else:
-            if self.is_bust(self.player):
+            if self.player.status == "BUST":
                 #reveal card
                 pass
-            else:
+            else: #nicht busted, wait for dealer to finish
                 while self.calculate_hand(self.dealer) < 17: 
                     self.dealer.hand.append(self.draw_card())
                     if self.is_bust(self.dealer):
                         self.update_status(self.dealer, "BUST")
                     elif self.calculate_hand(self.player) <= self.calculate_hand(self.dealer):
                         break
+                    
             self.phase_up() # phase 3 -> calc score
             self.calc_winner()
+        self.print_card(self.dealer)
+        print(self.calculate_hand(self.dealer))
 
 
     '''------------------Outcome------------------'''
@@ -166,7 +183,7 @@ class Game:
             return True
         return False
 
-    def phase_up(self):                                                 #Phase Counter
+    def phase_up(self): #Phase Counter
         self.phase += 1
 
     def update_status(self, hand_owner, status):                        #Status Overview
@@ -179,28 +196,33 @@ class Game:
         if p_total > 21:
             self.update_status(self.player, "LOST")
             self.update_status(self.dealer, "WIN")
+            print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
         
         if d_total > 21:
             self.update_status(self.player, "WIN")
             self.update_status(self.dealer, "LOST")
             self.player.score += self.bet * 2
+            print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
         
         if p_total == d_total:
             self.update_status(self.player, "PUSH")
             self.update_status(self.dealer, "PUSH")
             self.player.score += self.bet
+            print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
         
         if p_total > d_total:
             self.update_status(self.player, "WIN")
             self.update_status(self.dealer, "LOST")
             self.player.score += self.bet * 2
+            print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
         else:
             self.update_status(self.player, "LOST")
             self.update_status(self.dealer, "WIN")
+            print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
 
     '''------------------placeholders------------------'''
@@ -230,9 +252,4 @@ if __name__ == '__main__':
     '''
 
     # Example for how we might test your program:
-    game = Game()           # create new game
-    for i in range(3):               # run for 3 steps
-        game.step()
-    game.save_game('saved')          # save game state
-    game2 = Game.load_game('saved')  # load game state
-    assert game.get_current_state() == game2.get_current_state()
+    game = Game(dummy_player)           # create new game

@@ -22,3 +22,6 @@ class Card:
     @suit.setter
     def suit(self, suit):
         self._suit = suit
+        
+    def __str__(self):
+        return self.rank + " " + self.suit

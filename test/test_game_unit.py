@@ -1,12 +1,4 @@
-# deck property
+import pytest
 
-
-
-# player property
-
-    #init correctly?
-
-    
-    #hands passed correctly?
-    
-    #
+def test_passing_player_as_user(game):
+    pass
