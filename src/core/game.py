@@ -34,7 +34,13 @@ class Game:
 
     """------------------print card------------"""
     def print_card(self, hand_owner):
-        print(hand_owner.name, [(card.rank, card.suit) for card in hand_owner.hand])
+        if hasattr(hand_owner, "name"):
+            print(hand_owner.name, [(card.rank, card.suit) for card in hand_owner.hand])
+            print(len(hand_owner.hand))
+        else:
+            print("deck", [(card.rank, card.suit) for card in hand_owner])
+            print(len(hand_owner))
+            
     '''------------------Deck------------------'''
 
     def create_deck(self):                                              #Creates Deck
@@ -69,8 +75,6 @@ class Game:
 
     def initialize_game(self):                                          #New game / Start Game / Play Again  --> start_game() and place_bet() + / - and reset_round()
         self.reset_round()
-        self.place_bet()
-        self.start_game()
         pprint(vars(self))
 
         
@@ -95,11 +99,12 @@ class Game:
     def add_on_click(self):                                             #Hit --> draw_card() and if is_bust() --> dealer_draw()
         if self.phase != 1:
             return
-        self.player.hand.append(self.draw_card())
-        if self.is_bust(self.player):
-            self.update_status(self.player, "BUST")
-            self.phase_up()  #phase 2 -> Dealer
-            self.dealer_draw() #reveal dealer card -> dealer actions
+        else:
+            self.player.hand.append(self.draw_card())
+            if self.is_bust(self.player):
+                self.update_status(self.player, "BUST")
+                self.phase_up()  #phase 2 -> Dealer
+                self.dealer_draw() #reveal dealer card -> dealer actions
         self.print_card(self.player)
         print(self.calculate_hand(self.player))
         
@@ -115,6 +120,7 @@ class Game:
 
     def place_bet(self):                                                #Places bet
         self.player.score -= self.bet
+        self.start_game()
         self.phase_up()
 
     def add_bet(self):                                                  # + Button to higher bet
@@ -138,7 +144,7 @@ class Game:
 
     def dealer_draw(self):                                              #Dealer turn --> calc_winner()
         if self.phase != 2:
-            pass
+            return
         else:
             if self.player.status == "BUST":
                 #reveal card
