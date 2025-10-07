@@ -223,6 +223,7 @@ class Game:
             self.update_status(self.player, "WIN")
             self.update_status(self.dealer, "LOST")
             self.player.score += self.bet * 2
+            #check history best and save
             print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
         else:

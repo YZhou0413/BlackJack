@@ -16,7 +16,9 @@ class Player:
         '''
         self.name = name
         self.password = "0000"
-        self.score = 1000
+        self.score = 1000 #acutual account saldo
+        
+        self.best_score = 1000 #history best, checked after every round
 
 
     def getScore():
