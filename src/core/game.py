@@ -10,12 +10,20 @@ from src.core.player import Player
 from src.core.cards import Card
 import random
 
+
+class Dealer(Player):
+    """Temporär for test"""
+    def __init__(self):
+        super().__init__("Dealer")
+        self.hand = []
+        self.status = "START"
+
 class Game:
     gamer_stat = ["START", "WIN", "LOST", "BUST", "PUSH", "not yet"]
     def __init__(self, user):
         self.deck = self.create_deck()
         self.shuffle_deck()
-        self.dealer = Dealer.dealer()
+        self.dealer = Dealer()
         self.dealer.hand = []
         self.dealer.status = "START"
         self.player = user
@@ -49,27 +57,23 @@ class Game:
                 self.phase_up()  #phase 2 -> Dealer
         
 
-    def calculate_hand(self, who):    
+    def calculate_hand(self, who):
         score = 0
         aces = 0
-
         for c in who.hand:
             if c.rank == "A":
                 score += 11
                 aces += 1
-            elif c.rank == "J" or "Q" or "K":
+            elif c.rank in ["J", "Q", "K"]:
                 score += 10
             else:
                 score += int(c.rank)
-        
+
         while score > 21 and aces > 0:
             score -= 10
             aces -= 1
-        
         return score
-            
-    def phase_up(self):
-        self.phase += 1
+
 
     def is_bust(self, who):
         if self.calculate_hand(who) > 21:
@@ -77,6 +81,25 @@ class Game:
             return True
         return False
 
+
+    def reset_round(self):
+        self.deck = self.create_deck()
+        self.shuffle_deck()
+        self.player.hand = []
+        self.dealer.hand = []
+        self.player.status = "START"
+        self.dealer.status = "START"
+        self.bet = 100
+        self.phase = 0
+        self.ai_play = False
+
+
+    def update_status(self, who, status):
+        who.status = status
+
+            
+    def phase_up(self):
+        self.phase += 1
 
 
     def login_user(self):
@@ -96,7 +119,7 @@ class Game:
         self.deal_initial_hands(self.dealer)
 
     def place_bet(self):
-        self.player.score - self.bet
+        self.player.score -= self.bet
 
     def add_bet(self):
         """
@@ -113,13 +136,12 @@ class Game:
         else:
             print("u have to bet something")
 
-    def reset_round(self):
-        self.bet = 100
-
-
+    """def deal_initial_hands(self, who):
+        who.hand.append(self.draw_card(who))
+        who.hand.append(self.draw_card(who))
+        """
     def deal_initial_hands(self, who):
-        who.hand.append(self.draw_card(who))
-        who.hand.append(self.draw_card(who))
+        who.hand = [self.draw_card(), self.draw_card()]
 
     def player_stands(self):
         self.phase_up() #phase 2 -> dealer
@@ -135,8 +157,7 @@ class Game:
                     self.phase_up() # phase 3 -> calc score
                 
 
-    def update_status(self, who, status):
-        who.status = status
+
 
     def save_score(self):
         pass
