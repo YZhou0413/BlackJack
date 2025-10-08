@@ -27,13 +27,21 @@ class Login(QWidget):
         #---- create login layout ----
         form_layout = QFormLayout()
 
-        # display input fields below their respective label
+        # config layout
         form_layout.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapAllRows)
         form_layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
 
+        # create user input field
+        username_input_field = QLineEdit()
+        username_input_field.setPlaceholderText("username")
+
+        # create password input field
+        password_input_field = QLineEdit()
+        password_input_field.setPlaceholderText("password")
+
         # add form elements to layout
-        form_layout.addRow("username", QLineEdit("username"))
-        form_layout.addRow("password", QLineEdit("password"))
+        form_layout.addRow("username", username_input_field)
+        form_layout.addRow("password", password_input_field)
         form_layout.addRow(signin_button)
         form_layout.addRow(form_info)
 

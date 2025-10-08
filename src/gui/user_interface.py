@@ -10,8 +10,10 @@ from PySide6.QtCore import QSize
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
+    QStackedWidget
 )
 from menu import Menu
+from login import Login
 
 
 # Represents app window
@@ -36,12 +38,27 @@ class MainWindow(QMainWindow):
         self.setFixedSize(QSize(MainWindow.WINDOW_FIXED_WIDTH, MainWindow.WINDOW_FIXED_HEIGHT))
 
 
-        # ---- setup menu ----
-        # create menu page
-        menu = Menu()
+        # ---- setup pages ----
+        self.pages = QStackedWidget()
 
-        # set menu as central widget of main window
-        self.setCentralWidget(menu)
+        # add menu page
+        menu = Menu()
+        self.pages.addWidget(menu)
+
+        # add login page
+        self.login = Login()
+        self.pages.addWidget(self.login)
+
+        # connect login button in menu with login page
+        menu.open_login_signal.connect(self.open_login_view)
+
+        # set menu as initial central widget of main window
+        self.setCentralWidget(self.pages)
+
+
+    # SIGNAL HANDLER METHODS
+    def open_login_view(self):
+        self.pages.setCurrentWidget(self.login)
 
 
 if __name__ == '__main__':
