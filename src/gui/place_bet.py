@@ -28,12 +28,12 @@ class PlaceBet(QWidget):
         self.placed_bet_field.setReadOnly(True)
 
         # create increase bet button
-        increase_bet_button = QPushButton("+100$")
-        increase_bet_button.clicked.connect(self.increase_bet)
+        self.increase_bet_button = QPushButton("+100$")
+        self.increase_bet_button.clicked.connect(self.increase_bet)
 
         # create decrease bet button
-        decrease_bet_button = QPushButton("-100$")
-        decrease_bet_button.clicked.connect(self.decrease_bet)
+        self.decrease_bet_button = QPushButton("-100$")
+        self.decrease_bet_button.clicked.connect(self.decrease_bet)
 
         # create lock in button
         lock_in_button = QPushButton("Lock in")
@@ -41,8 +41,8 @@ class PlaceBet(QWidget):
 
         # create flow container for bet buttons
         bet_buttons_layout = QHBoxLayout()
-        bet_buttons_layout.addWidget(decrease_bet_button)
-        bet_buttons_layout.addWidget(increase_bet_button)
+        bet_buttons_layout.addWidget(self.decrease_bet_button)
+        bet_buttons_layout.addWidget(self.increase_bet_button)
 
         bet_buttons_container = QWidget()
         bet_buttons_container.setLayout(bet_buttons_layout)
@@ -95,10 +95,26 @@ class PlaceBet(QWidget):
         self.current_balance -= 100
         print("bet increased by 100")
 
+        # if balance is below 100, disable increase bet button
+        if self.current_balance < 100:
+            self.increase_bet_button.setEnabled(False)
+
+        # if placed bet is at least 200, enable decrease bet button
+        if self.placed_bet >= 200:
+            self.decrease_bet_button.setEnabled(True)
+
     def decrease_bet(self):
         self.placed_bet -= 100
         self.current_balance += 100
         print("bet decreased by 100")
+
+        # if placed bet is below 200
+        if self.placed_bet < 200:
+            self.decrease_bet_button.setEnabled(False)
+
+        # if balance is at least 100, enable the increase bet button
+        if self.current_balance >= 100:
+            self.increase_bet_button.setEnabled(True)
 
     def lock_in_bet(self):
         print("bet locked in, starting game...")
