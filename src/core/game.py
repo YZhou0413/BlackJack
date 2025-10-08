@@ -78,7 +78,9 @@ class Game:
         pprint(vars(self))
 
         
-    def start_game(self):                                               #Bet is Placed --> Deal Cards --> deal_initial_hands()        
+    def start_game(self):                                               #Bet is Placed --> Deal Cards --> deal_initial_hands()
+         #phase 1 -> player
+        
         self.deal_initial_hands(self.player)
         self.print_card(self.player)
         self.deal_initial_hands(self.dealer)
@@ -100,6 +102,7 @@ class Game:
         else:
             self.player.hand.append(self.draw_card())
             if self.is_bust(self.player):
+                self.update_status(self.player, "BUST")
                 self.phase_up()  #phase 2 -> Dealer
                 self.dealer_draw() #reveal dealer card -> dealer actions
         self.print_card(self.player)
@@ -116,8 +119,6 @@ class Game:
     '''------------------Place bets <phase 0>------------------'''   
 
     def place_bet(self):                                                #Places bet
-        if self.player.score == 0:
-            return
         self.player.score -= self.bet
         self.start_game()
         self.phase_up()
@@ -198,34 +199,34 @@ class Game:
         p_total = self.calculate_hand(self.player)
         d_total = self.calculate_hand(self.dealer)
 
-        if p_total > 21:                                                #Player Bust Dealer WIN
+        if p_total > 21:
             self.update_status(self.player, "LOST")
             self.update_status(self.dealer, "WIN")
             print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
         
-        if d_total > 21:                                                #Dealer Bust Player Win
+        if d_total > 21:
             self.update_status(self.player, "WIN")
             self.update_status(self.dealer, "LOST")
             self.player.score += self.bet * 2
             print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
         
-        if p_total == d_total:                                          #PUSH
+        if p_total == d_total:
             self.update_status(self.player, "PUSH")
             self.update_status(self.dealer, "PUSH")
             self.player.score += self.bet
             print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
         
-        if p_total > d_total:                                           #Player Win
+        if p_total > d_total:
             self.update_status(self.player, "WIN")
             self.update_status(self.dealer, "LOST")
             self.player.score += self.bet * 2
             #check history best and save
             print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
-        else:                                                           #Dealer Win
+        else:
             self.update_status(self.player, "LOST")
             self.update_status(self.dealer, "WIN")
             print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
