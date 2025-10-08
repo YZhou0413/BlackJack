@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
     QApplication,
     QTextEdit
 )
+from login_approve_dialog import ApproveDialog
 
 class Login(QWidget):
 
@@ -75,19 +76,24 @@ class Login(QWidget):
 
         # if username not yet taken, open modal for user approval of account creation
         else:
-            print("Do you want to create a new account for \"%s\"?" % username)
+            #---- show modal dialog ----
+            modal_dialog = ApproveDialog(parent=self, title="Confirm account creation")
+            modal_dialog.set_dialog_message(
+                "Do you want to create a new account for \"%s\"?" % username
+            )
+
             # if user cancels, close modal
-            # todo: add modal dialog logic
-            if False: # placeholder condition
+            if not modal_dialog.exec():
                 self.form_info.setText("Account creation disapproved by user")
                 # exit sign in validation
                 return None
 
+            # if user accepts, create new account
             else:
-                # if user accepts, create new account
                 print("User has approved. Account creation triggered")
                 self.trigger_account_creation(username, password)
 
+        #---- grant access to game ----
         # if credentials match or user approves account creation
         # send signal for showing place bet page
         print("Load player data and open bet page")
@@ -140,7 +146,7 @@ if __name__ == "__main__":
     # create QApp instance
     app = QApplication([])
 
-    # create and show main window
+    # create and show login window
     window = Login()
     window.show()
 
