@@ -25,3 +25,4 @@ class Card:
         
     def __str__(self):
         return self.rank + " " + self.suit
+    

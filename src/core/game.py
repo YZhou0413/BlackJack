@@ -9,6 +9,7 @@
 from player import Player, Dealer
 from cards import Card
 import random
+import login_panda
 from pprint import pprint
 
 dummy_player = Player("dummy")
@@ -201,6 +202,7 @@ class Game:
         if p_total > 21:                                                #Player Bust Dealer WIN
             self.update_status(self.player, "LOST")
             self.update_status(self.dealer, "WIN")
+            self.save_score()
             print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
         
@@ -208,6 +210,7 @@ class Game:
             self.update_status(self.player, "WIN")
             self.update_status(self.dealer, "LOST")
             self.player.score += self.bet * 2
+            self.save_score()
             print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
         
@@ -215,6 +218,7 @@ class Game:
             self.update_status(self.player, "PUSH")
             self.update_status(self.dealer, "PUSH")
             self.player.score += self.bet
+            self.save_score()
             print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
         
@@ -222,6 +226,7 @@ class Game:
             self.update_status(self.player, "WIN")
             self.update_status(self.dealer, "LOST")
             self.player.score += self.bet * 2
+            self.save_score()
             #check history best and save
             print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
@@ -229,26 +234,62 @@ class Game:
             self.update_status(self.player, "LOST")
             self.update_status(self.dealer, "WIN")
             print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
+            self.save_score()
             return
 
-    '''------------------placeholders------------------'''
-    
-    def login_user(self):
-        pass
+    '''------------------Users------------------'''
+    def login_user(self, username, password):
+        username = str(username).strip()
+        if not username or not password:
+            print("Username/Passwort leer.")
+            return False
+
+        if login_panda:
+            if login_panda.user_exists(username):
+                if login_panda.verify_user(username, password):
+                    self.player.name = username
+                    self.player.password = password
+                    self.player.score = login_panda.get_score(username)
+                    return True
+                print("Falsches Passwort.")
+                return False
+            # neu anlegen
+            if login_panda.create_user(username, password, start_score = getattr(self.player, "score", 1000)):
+                self.player.name = username
+                self.player.password = password
+                self.player.score = login_panda.get_score(username)
+                return True
+            print("Fehler beim Anlegen.")
+            return False
+
 
     def logout_user(self):
-        pass
+        if not getattr(self.player, "name", ""):
+            print("Kein eingeloggter User.")
+            return
+        self.save_score()
+        self.player.name = ""
+
 
     def save_score(self):
-        pass
-    #update user score in json
+        name = getattr(self.player, "name", "")
+        if not name:
+            print("Kein eingeloggter User – nichts zu speichern.")
+            return
+        if login_panda:
+            try:
+                login_panda.set_score(name, int(self.player.score))
+            except Exception as e:
+                print("Speicherfehler:", e)
 
-    def exit_game(self):
-        pass
 
     def load_allscores(self):
-        pass
-    #for scoreboard, migrate later
+        if login_panda:
+            try:
+                return login_panda.list_scores(as_df = False)
+            except Exception:
+                return {}
+        return {}
 
 
 

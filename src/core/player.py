@@ -25,7 +25,7 @@ class Player:
 
 
     @staticmethod
-    def _hash_password_simple(password):
+    def hash_password(password):
         return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 
@@ -65,12 +65,12 @@ class Player:
 
     @password.setter
     def password(self, new_password):
-        self.password_hash = self._hash_password_simple(new_password)
+        self.password_hash = self.hash_password(new_password)
 
     def check_password(self, password):
         if not self.password_hash:
             return False
-        return self.password_hash == self._hash_password_simple(password)
+        return self.password_hash == self.hash_password(password)
 
     def getScore(self):
         return self.score
