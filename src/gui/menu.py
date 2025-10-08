@@ -1,3 +1,4 @@
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QPushButton, QVBoxLayout, QWidget
 )
@@ -5,6 +6,8 @@ from PySide6.QtWidgets import (
 
 # represents game menu
 class Menu(QWidget):
+    # create signal for showing login page
+    open_login_signal = Signal()
 
     # CONSTRUCTOR
     def __init__(self):
@@ -38,7 +41,7 @@ class Menu(QWidget):
 
     # SIGNAL HANDLER METHODS
     def open_login_view(self):
-        print("Login button pressed")
+        self.open_login_signal.emit()
 
     def open_rules_view(self):
         print("Rules button pressed")
