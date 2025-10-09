@@ -6,10 +6,10 @@
 # Software Assignment                #
 ######################################
 
-from player import Player, Dealer
-from cards import Card
+from core.player import Player, Dealer
+from core.cards import Card
 import random
-import login_panda
+import core.login_panda as login_panda
 from pprint import pprint
 
 dummy_player = Player("dummy")
@@ -34,6 +34,7 @@ class Game:
 
 
     '''------------------Print Card------------------'''
+
     def print_card(self, hand_owner):
         if hasattr(hand_owner, "name"):
             print(hand_owner.name, [(card.rank, card.suit) for card in hand_owner.hand])
@@ -42,6 +43,7 @@ class Game:
             print("deck", [(card.rank, card.suit) for card in hand_owner])
             print(len(hand_owner))
             
+
     '''------------------Deck------------------'''
 
     def create_deck(self):                                              #Creates Deck
@@ -71,7 +73,6 @@ class Game:
         self.dealer.status = "START"
         self.bet = 100
         self.phase = 0
-        self.ai_play = False
 
 
     def initialize_game(self):                                          #New game / Start Game / Play Again  --> start_game() and place_bet() + / - and reset_round()
@@ -170,8 +171,8 @@ class Game:
     '''------------------AI Plays------------------'''
 
     def toggle_ai(self):                                                #toggles AI on button click
-        return self.ai_play == False
-
+        self.ai_play = (self.ai_play == False)
+    
     def ai_plays(self):                                                 #AI Plays for Player if turned True --> player_stands()
         while self.calculate_hand(self.player) < 17:
             self.add_on_click()
@@ -253,7 +254,9 @@ class Game:
             self.save_score()
             return
 
+
     '''------------------Users------------------'''
+
     def login_user(self, username, password):                           #User Login / Create
         username = str(username).strip()
         if not username or not password:
@@ -291,20 +294,19 @@ class Game:
         if not name:
             print("No logged in User.")
             return
-        if login_panda:
-            try:
-                login_panda.set_score(name, int(self.player.score))
-            except Exception as e:
-                print("Save Error:", e)
+
+        try:
+            login_panda.set_score(name, int(self.player.score))
+        except Exception as e:
+            print("Save Error:", e)
 
 
     def load_allscores(self):                                           #Load all Scores
-        if login_panda:
-            try:
-                return login_panda.list_scores(as_df = False)
-            except Exception:
-                return {}
-        return {}
+        try:
+            return login_panda.list_scores(as_df = False)
+        except Exception:
+            return {}
+
 
 
 
