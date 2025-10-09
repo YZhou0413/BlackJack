@@ -1,7 +1,7 @@
-from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QWidget, QVBoxLayout, QHBoxLayout,QPushButton, QApplication, QFileDialog, QLabel
+from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QWidget, QVBoxLayout, QHBoxLayout,QPushButton, QApplication, QFileDialog, QLabel, QMainWindow
+
 from PySide6.QtGui import QColor, QPixmap, QImage, QPainter, QIcon, QTransform
 from PySide6.QtCore import Qt, QRectF, QSize, QRect
-
 import sys
 import os
 
@@ -9,6 +9,7 @@ sys.path.append("../")
 from core.cards import Card
 from core.player import Player, Dealer
 from core.game import Game
+
 
 #goal of this file is to draw game board
 # ___dummy test object____
@@ -129,15 +130,21 @@ class GameTable(QWidget):
             
         
 if "__name__" == "__main__":
-    app = QApplication([])
-
-    # create and show table window
-    window = 
-    window.show()
-
-    # start event loop
-    app.exec()
-            
+    def test_widget():
+        app = QApplication(sys.argv)
+        
+        # Create a dummy main window
+        window = QMainWindow()
+        window.setWindowTitle("Test Window")
+        window.resize(400, 300)
+        
+        # Create your widget and set it as the central widget
+        widget = GameTable()
+        window.setCentralWidget(widget)
+        
+        window.show()
+        sys.exit(app.exec_())
+    test_widget()
             
 
 
