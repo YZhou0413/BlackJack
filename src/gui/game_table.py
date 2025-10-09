@@ -3,10 +3,12 @@ from PySide6.QtGui import QColor, QPixmap, QImage, QPainter, QIcon, QTransform
 from PySide6.QtCore import Qt, QRectF, QSize, QRect
 
 import sys
-sys.path.append('../')
-from src.core.cards import Card
-from src.core.player import Player, Dealer
-from src.core.game import Game
+import os
+
+sys.path.append("../")
+from core.cards import Card
+from core.player import Player, Dealer
+from core.game import Game
 
 #goal of this file is to draw game board
 # ___dummy test object____
@@ -25,6 +27,8 @@ def dummy_deck():
 
 def dummy_player():
     return Player("Tester")
+def dummy_dealer():
+    return Dealer()
 
 
 def game(dummy_player):
@@ -40,6 +44,7 @@ class PlayerHandWidget(QWidget):
         self.owner_name = hand_owner.name
         self.vLayout = QVBoxLayout()
         self.hLayout = QHBoxLayout()
+        self.setup_ui()
         
         
         
@@ -74,6 +79,7 @@ class CardView(QGraphicsView):
     
     def __init__(self):
         super().__init__()
+        self.setup_ui()
         
         
     def setup_ui(self):
@@ -105,15 +111,32 @@ class GameTable(QWidget):
         def __init__(self):
         #---- setup game table----
             super().__init__()
+            self.setup_ui()
 
 
             # set fixed size of the main window
             self.setFixedSize(QSize(GameTable.WINDOW_FIXED_WIDTH, GameTable.WINDOW_FIXED_HEIGHT))
             
         def setup_ui(self):
-            self.dealer_card_view = PlayerHandWidget(dummy_player("Dealer"))
+            self.dealer_card_view = PlayerHandWidget(dummy_dealer())
+            self.player_card_view = PlayerHandWidget(dummy_player())
             self.vLayout = QVBoxLayout(self)
-            self.vLayout
+            self.vLayout.addChildWidget(self.dealer_card_view)
+            self.placeholder = QWidget()
+            self.vLayout.addChildWidget(self.placeholder)
+            self.vLayout.addChildWidget(self.player_card_view)
+            
+            
+        
+if "__name__" == "__main__":
+    app = QApplication([])
+
+    # create and show table window
+    window = 
+    window.show()
+
+    # start event loop
+    app.exec()
             
             
 

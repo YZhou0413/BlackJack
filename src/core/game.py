@@ -6,10 +6,10 @@
 # Software Assignment                #
 ######################################
 
-from player import Player, Dealer
-from cards import Card
+from core.player import Player, Dealer
+from core.cards import Card
 import random
-import login_panda
+import core.login_panda as login_panda
 from pprint import pprint
 
 dummy_player = Player("dummy")
