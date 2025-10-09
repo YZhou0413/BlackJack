@@ -1,7 +1,7 @@
 import pandas as pd
 import hashlib
 
-USERS_FILENAME = "users.csv"  # liegt im aktuellen Arbeitsverzeichnis
+USERS_FILENAME = "users.csv"
 
 def hash_password(password):
     return hashlib.sha256(password.encode("utf-8")).hexdigest()

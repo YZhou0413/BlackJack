@@ -23,11 +23,14 @@ class Player:
         self._best_score = 1000 #history best, checked after every round
 
 
+    '''------------------Pw Hash------------------'''
 
     @staticmethod
     def hash_password(password):
         return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
+
+    '''------------------Properties------------------'''
 
     @property
     def name(self):
@@ -71,18 +74,6 @@ class Player:
         if not self.password_hash:
             return False
         return self.password_hash == self.hash_password(password)
-
-    def getScore(self):
-        return self.score
-
-    def getUsername(self):
-        return self.name
-    
-    def set_password(self, new_password):
-        self.password = new_password
-
-    def set_score(self, new_score):
-        self.score = new_score
 
     def update_from_input(self, new_info, new_val):
         pass
