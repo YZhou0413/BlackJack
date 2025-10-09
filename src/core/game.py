@@ -33,7 +33,7 @@ class Game:
         self.initialize_game()
 
 
-    """------------------print card------------"""
+    '''------------------Print Card------------------'''
     def print_card(self, hand_owner):
         if hasattr(hand_owner, "name"):
             print(hand_owner.name, [(card.rank, card.suit) for card in hand_owner.hand])
@@ -84,34 +84,16 @@ class Game:
         self.print_card(self.player)
         self.deal_initial_hands(self.dealer)
         self.print_card(self.dealer)
-        
+
         self.dealer.status = "in-game"
         self.player.status = "in-game"
+
+        if self.ai_play == True:
+            self.ai_plays()
 
     def deal_initial_hands(self, hand_owner):                           #Cards gotten --> Stand / Hit Button possible
         hand_owner.hand = [self.draw_card(), self.draw_card()]
 
-
-        
-    '''------------------Player actions <phase 1>------------------'''   
-
-    def add_on_click(self):                                             #Hit --> draw_card() and if is_bust() --> dealer_draw()
-        if self.phase != 1:
-            return
-        else:
-            self.player.hand.append(self.draw_card())
-            if self.is_bust(self.player):
-                self.phase_up()  #phase 2 -> Dealer
-                self.dealer_draw() #reveal dealer card -> dealer actions
-        self.print_card(self.player)
-        print(self.calculate_hand(self.player))
-        
-    def player_stands(self):                                            #Stand --> dealer_draw()
-        self.phase_up() #phase 2 -> dealer
-        self.dealer_draw()
-        self.print_card(self.player)
-        print(self.calculate_hand(self.player))
-        
 
 
     '''------------------Place bets <phase 0>------------------'''   
@@ -139,6 +121,27 @@ class Game:
             print("u have to bet something")
 
 
+        
+    '''------------------Player actions <phase 1>------------------'''   
+
+    def add_on_click(self):                                             #Hit --> draw_card() and if is_bust() --> dealer_draw()
+        if self.phase != 1:
+            return
+        else:
+            self.player.hand.append(self.draw_card())
+            if self.is_bust(self.player):
+                self.phase_up()  #phase 2 -> Dealer
+                self.dealer_draw() #reveal dealer card -> dealer actions
+        self.print_card(self.player)
+        print(self.calculate_hand(self.player))
+        
+    def player_stands(self):                                            #Stand --> dealer_draw()
+        self.phase_up() #phase 2 -> dealer
+        self.dealer_draw()
+        self.print_card(self.player)
+        print(self.calculate_hand(self.player))
+        
+
     
     '''------------------Phase 2 Dealer------------------'''
 
@@ -161,6 +164,19 @@ class Game:
             self.calc_winner()
         self.print_card(self.dealer)
         print(self.calculate_hand(self.dealer))
+
+
+
+    '''------------------AI Plays------------------'''
+
+    def toggle_ai(self):                                                #toggles AI on button click
+        return self.ai_play == False
+
+    def ai_plays(self):                                                 #AI Plays for Player if turned True --> player_stands()
+        while self.calculate_hand(self.player) < 17:
+            self.add_on_click()
+        self.player_stands()
+
 
 
     '''------------------Outcome------------------'''
@@ -238,52 +254,51 @@ class Game:
             return
 
     '''------------------Users------------------'''
-    def login_user(self, username, password):
+    def login_user(self, username, password):                           #User Login / Create
         username = str(username).strip()
         if not username or not password:
-            print("Username/Passwort leer.")
+            print("Username/Password empty.")
             return False
 
-        if login_panda:
-            if login_panda.user_exists(username):
-                if login_panda.verify_user(username, password):
-                    self.player.name = username
-                    self.player.password = password
-                    self.player.score = login_panda.get_score(username)
-                    return True
-                print("Falsches Passwort.")
-                return False
-            # neu anlegen
-            if login_panda.create_user(username, password, start_score = getattr(self.player, "score", 1000)):
+        if login_panda.user_exists(username):
+            if login_panda.verify_user(username, password):
                 self.player.name = username
                 self.player.password = password
                 self.player.score = login_panda.get_score(username)
                 return True
-            print("Fehler beim Anlegen.")
+            print("Wrong Password.")
             return False
 
+        if login_panda.create_user(username, password, start_score = getattr(self.player, "score", 1000)):
+            self.player.name = username
+            self.player.password = password
+            self.player.score = login_panda.get_score(username)
+            return True
+        print("Error at User Creation.")
+        return False
 
-    def logout_user(self):
+
+    def logout_user(self):                                              #User Logout
         if not getattr(self.player, "name", ""):
-            print("Kein eingeloggter User.")
+            print("No logged in User.")
             return
         self.save_score()
         self.player.name = ""
 
 
-    def save_score(self):
+    def save_score(self):                                               #Score Save
         name = getattr(self.player, "name", "")
         if not name:
-            print("Kein eingeloggter User – nichts zu speichern.")
+            print("No logged in User.")
             return
         if login_panda:
             try:
                 login_panda.set_score(name, int(self.player.score))
             except Exception as e:
-                print("Speicherfehler:", e)
+                print("Save Error:", e)
 
 
-    def load_allscores(self):
+    def load_allscores(self):                                           #Load all Scores
         if login_panda:
             try:
                 return login_panda.list_scores(as_df = False)
@@ -299,4 +314,4 @@ if __name__ == '__main__':
     '''
 
     # Example for how we might test your program:
-    game = Game(dummy_player)           # create new game
+    game = Game(dummy_player)                                           # create new game

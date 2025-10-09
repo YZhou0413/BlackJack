@@ -69,8 +69,8 @@ def set_score(username, score):
 
 def list_scores(as_df: bool = False):
     df = load_df()
-    df['score'] = df['score'].fillna(0).astype(int)
-    df['best_score'] = df['best_score'].fillna(0).astype(int)
+    df['score'] = df['score'].astype(int)
+    df['best_score'] = df['best_score'].astype(int)
     if as_df:
         return df[['username', 'score', 'best_score']].copy()
     return dict(zip(df['username'], df['score']))
