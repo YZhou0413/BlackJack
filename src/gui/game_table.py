@@ -1,19 +1,19 @@
-from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QWidget, QVBoxLayout, QHBoxLayout,QPushButton, QApplication, QFileDialog, QLabel, QMainWindow
-
-from PySide6.QtGui import QColor, QPixmap, QImage, QPainter, QIcon, QTransform
-from PySide6.QtCore import Qt, QRectF, QSize, QRect
 import sys
 import os
+from PySide6.QtWidgets import (
+    QGraphicsView, QGraphicsScene, QWidget, QVBoxLayout, QHBoxLayout,
+    QLabel, QMainWindow, QApplication
+)
+from PySide6.QtCore import Qt, QSize
+from PySide6.QtGui import QPainter, QColor
 
-sys.path.append("../")
+# Add src to sys.path if running from gui folder
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from core.cards import Card
 from core.player import Player, Dealer
 from core.game import Game
 
-
-#goal of this file is to draw game board
-# ___dummy test object____
-CARD_FOLDER_PATH = "Asset/PNG-Cards/"
+# Dummy objects for testing
 def dummy_deck():
     return {
         "2": Card("2", "Spades"),
@@ -25,127 +25,118 @@ def dummy_deck():
         "9": Card("9", "Hearts")
     }
 
-
 def dummy_player():
     return Player("Tester")
+
 def dummy_dealer():
     return Dealer()
 
 
-def game(dummy_player):
-    return Game(dummy_player)
-
-class PlayerHandWidget(QWidget):
-    HAND_FIXED_WIDTH = 640
-    HAND_FIXED_HEIGHT = int(HAND_FIXED_WIDTH * 0.66 * 0.3) #hand takes 30% window height
-    
-    def __init__(self, hand_owner):
-        super().__init__()
-        self.owner = hand_owner
-        self.owner_name = hand_owner.name
-        self.vLayout = QVBoxLayout()
-        self.hLayout = QHBoxLayout()
-        self.setup_ui()
-        
-        
-        
-        
-    
-    
-    def setup_ui(self):
-        self.setLayout(self.hLayout) 
-        
-        #stats area at left 
-        self.stats_area =  QWidget(parent=self, width=int(PlayerHandWidget.HAND_FIXED_WIDTH * 0.2))
-        self.stats_area.setLayout(self.vLayout)
-        if type(self.owner) is Player:
-            name_tag = QLabel(f'{self.owner_name}')
-            score_tag = QLabel("score: " + f'{self.owner.score}')
-            best_tag = QLabel("history best " + f'{self.owner.best_score}')
-            self.vLayout.addChildWidget(name_tag)
-            self.vLayout.addChildWidget(score_tag)
-            self.vLayout.addChildWidget(best_tag)
-        elif type(self.owner) is Dealer:
-            name_tag = QLabel('Dealer')
-            self.vLayout.addWidget(name_tag)
-        
-        #add the card view widget
-        self.card_widget = CardView()
-        self.hLayout.addChildWidget(self.card_widget)
-            
-#card area in the middle
 class CardView(QGraphicsView):
     VIEW_WIDTH = 640 * 0.5
-    VIEW_HEIGHT = int(640 * 0.66 * 0.3)
-    
+    VIEW_HEIGHT = int(640 * 0.5 * 0.3)
+
     def __init__(self):
         super().__init__()
         self.setup_ui()
-        
-        
+
     def setup_ui(self):
         self.setFixedSize(QSize(int(CardView.VIEW_WIDTH), int(CardView.VIEW_HEIGHT)))
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-
         self.scene_ = QGraphicsScene(self)
-        self.setScene(self.scene_)  
-        
-    def update_view(self):                  #when a card is add to view, or a card needs to be reveal, we need to update view
+        self.setScene(self.scene_)
+        self.scene_.setBackgroundBrush(QColor("#BDBAB9"))
+    def update_view(self):
         pass
-    
-    
-    def grey_up_view(self):                 #when man busted or game finished, we will blend out the card view
-        pass      
 
-        
-    
-    
-    
+    def grey_up_view(self):
+        pass
+
+
+class PlayerHandWidget(QWidget):
+    HAND_FIXED_WIDTH = 640
+    HAND_FIXED_HEIGHT = int(HAND_FIXED_WIDTH * 0.66 * 0.4)  # hand takes 30% window height
+
+    def __init__(self, hand_owner):
+        super().__init__()
+        self.owner = hand_owner
+        self.owner_name = hand_owner.name if hasattr(hand_owner, "score") else "Dealer"
+        self.vLayout = QVBoxLayout()
+        self.hLayout = QHBoxLayout()
+        self.setup_ui()
+
+    def setup_ui(self):
+        self.setLayout(self.hLayout)
+
+        # Stats area
+        self.stats_area = QWidget(parent=self)
+        self.stats_area.setLayout(self.vLayout)
+        self.stats_area.setFixedWidth(int(PlayerHandWidget.HAND_FIXED_WIDTH * 0.3))
+        self.stats_area.setFixedHeight(int(PlayerHandWidget.HAND_FIXED_HEIGHT * 0.6))
+
+        if isinstance(self.owner, Dealer):
+            name_tag = QLabel('Dealer')
+            self.vLayout.addWidget(name_tag)
+        elif isinstance(self.owner, Player):
+            name_tag = QLabel(f'{self.owner_name}')
+            score_tag = QLabel("score: " + f'{self.owner.score}')
+            best_tag = QLabel("history best: " + f'{self.owner.best_score}')
+            self.vLayout.addWidget(name_tag)
+            self.vLayout.addWidget(score_tag)
+            self.vLayout.addWidget(best_tag)
+            
+
+        # Add stats area to layout
+        self.hLayout.addWidget(self.stats_area)
+
+        # Card view
+        self.card_widget = CardView()
+        self.hLayout.addWidget(self.card_widget)
+        self.setStyleSheet("border: 1px solid red")
+
+
 
 class GameTable(QWidget):
-        WINDOW_FIXED_WIDTH = 700
-        WINDOW_FIXED_HEIGHT = int(WINDOW_FIXED_WIDTH * 0.66)
+    WINDOW_FIXED_WIDTH = 700
+    WINDOW_FIXED_HEIGHT = int(WINDOW_FIXED_WIDTH * 0.66)
+
+    def __init__(self):
+        super().__init__()
+        self.setFixedSize(QSize(GameTable.WINDOW_FIXED_WIDTH, GameTable.WINDOW_FIXED_HEIGHT))
+        self.setup_ui()
+
+    def setup_ui(self):
+        self.vLayout = QVBoxLayout(self)
+
+        # Dealer and player hands
+        self.dealer_card_view = PlayerHandWidget(dummy_dealer())
+        self.player_card_view = PlayerHandWidget(dummy_player())
+
+        self.vLayout.addWidget(self.dealer_card_view)
+        # Placeholder widget for spacing
+        self.placeholder = QWidget()
+        self.vLayout.addWidget(self.placeholder)
+        self.vLayout.addWidget(self.player_card_view)
+        self.setStyleSheet("border: 1px solid #799C79; background-color: #799C79;")
 
 
-    # CONSTRUCTOR
-        def __init__(self):
-        #---- setup game table----
-            super().__init__()
-            self.setup_ui()
 
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
 
-            # set fixed size of the main window
-            self.setFixedSize(QSize(GameTable.WINDOW_FIXED_WIDTH, GameTable.WINDOW_FIXED_HEIGHT))
-            
-        def setup_ui(self):
-            self.dealer_card_view = PlayerHandWidget(dummy_dealer())
-            self.player_card_view = PlayerHandWidget(dummy_player())
-            self.vLayout = QVBoxLayout(self)
-            self.vLayout.addChildWidget(self.dealer_card_view)
-            self.placeholder = QWidget()
-            self.vLayout.addChildWidget(self.placeholder)
-            self.vLayout.addChildWidget(self.player_card_view)
-            
-            
-        
-if "__name__" == "__main__":
-    def test_widget():
-        app = QApplication(sys.argv)
-        
-        # Create a dummy main window
-        window = QMainWindow()
-        window.setWindowTitle("Test Window")
-        window.resize(400, 300)
-        
-        # Create your widget and set it as the central widget
-        widget = GameTable()
-        window.setCentralWidget(widget)
-        
-        window.show()
-        sys.exit(app.exec_())
-    test_widget()
-            
+    # Dummy main window
+    window = QMainWindow()
+    window.setFixedSize(700, int(700 * 0.66))
+    window.setWindowTitle("Test Game Table")
+    window.setStyleSheet("background-color: #799C79;")
+
+    widget = GameTable()
+    window.setCentralWidget(widget)
+    window.show()
+
+    sys.exit(app.exec())
+
 
 
             
