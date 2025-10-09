@@ -160,7 +160,7 @@ class Game:
                 return
         self.print_card(self.player)
         print(r'If you want to hit (pull another card) type "game.add_on_click()"')
-        print(r'When your happy with your hand and want to end your turn type "game.player_stands()"')
+        print(r'When you´re happy with your hand and want to end your turn type "game.player_stands()"')
         print("\n")
         print("\n")
 
