@@ -333,7 +333,7 @@ class Game:
             print("Wrong Password.")
             return False
 
-        if login_panda.create_user(username, password, start_score = getattr(self.player, "score", 1000)):
+        if login_panda.create_user(username, password, start_score = 1000):
             self.player.name = username
             self.player.password = password
             self.player.score = login_panda.get_score(username)
@@ -347,7 +347,7 @@ class Game:
             print("No logged in User.")
             return
         self.save_score()
-        self.player.name = ""
+        self.player.name = "dummy"
 
 
     def save_score(self):                                               #Score Save
