@@ -3,5 +3,5 @@ __pycache__/
 *.py[cod]
 
 # pytest cache
-.pytest_cache/
+./test/__pycache__
 *.pyc

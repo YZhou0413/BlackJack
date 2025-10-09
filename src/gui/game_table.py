@@ -9,9 +9,10 @@ from PySide6.QtGui import QPainter, QColor
 
 # Add src to sys.path if running from gui folder
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from core.game import Game
 from core.cards import Card
 from core.player import Player, Dealer
-from core.game import Game
 
 # Dummy objects for testing
 def dummy_deck():
@@ -33,8 +34,8 @@ def dummy_dealer():
 
 
 class CardView(QGraphicsView):
-    VIEW_WIDTH = 640 * 0.5
-    VIEW_HEIGHT = int(640 * 0.5 * 0.3)
+    VIEW_WIDTH = 500
+    VIEW_HEIGHT = 150
 
     def __init__(self):
         super().__init__()
@@ -55,8 +56,8 @@ class CardView(QGraphicsView):
 
 
 class PlayerHandWidget(QWidget):
-    HAND_FIXED_WIDTH = 640
-    HAND_FIXED_HEIGHT = int(HAND_FIXED_WIDTH * 0.66 * 0.4)  # hand takes 30% window height
+    HAND_FIXED_WIDTH = 700
+    HAND_FIXED_HEIGHT = 150  # hand takes 30% window height
 
     def __init__(self, hand_owner):
         super().__init__()
@@ -72,8 +73,10 @@ class PlayerHandWidget(QWidget):
         # Stats area
         self.stats_area = QWidget(parent=self)
         self.stats_area.setLayout(self.vLayout)
-        self.stats_area.setFixedWidth(int(PlayerHandWidget.HAND_FIXED_WIDTH * 0.3))
-        self.stats_area.setFixedHeight(int(PlayerHandWidget.HAND_FIXED_HEIGHT * 0.6))
+        self.setFixedHeight(int(PlayerHandWidget.HAND_FIXED_HEIGHT))
+
+        self.stats_area.setFixedHeight(150)
+        self.stats_area.setFixedWidth(180)
 
         if isinstance(self.owner, Dealer):
             name_tag = QLabel('Dealer')
@@ -93,13 +96,13 @@ class PlayerHandWidget(QWidget):
         # Card view
         self.card_widget = CardView()
         self.hLayout.addWidget(self.card_widget)
-        self.setStyleSheet("border: 1px solid red")
+        self.setStyleSheet("border: 1px solid red; padding: 0px; margin: 0px;")
 
 
 
 class GameTable(QWidget):
     WINDOW_FIXED_WIDTH = 700
-    WINDOW_FIXED_HEIGHT = int(WINDOW_FIXED_WIDTH * 0.66)
+    WINDOW_FIXED_HEIGHT = 490
 
     def __init__(self):
         super().__init__()
@@ -116,9 +119,10 @@ class GameTable(QWidget):
         self.vLayout.addWidget(self.dealer_card_view)
         # Placeholder widget for spacing
         self.placeholder = QWidget()
+        self.placeholder.setFixedHeight(170)
         self.vLayout.addWidget(self.placeholder)
         self.vLayout.addWidget(self.player_card_view)
-        self.setStyleSheet("border: 1px solid #799C79; background-color: #799C79;")
+        self.setStyleSheet(" background-color: #0B7D0B ;padding: 0px; margin: 0px;")
 
 
 
@@ -127,9 +131,9 @@ if __name__ == "__main__":
 
     # Dummy main window
     window = QMainWindow()
-    window.setFixedSize(700, int(700 * 0.66))
+    window.setFixedSize(700, 490)
     window.setWindowTitle("Test Game Table")
-    window.setStyleSheet("background-color: #799C79;")
+    window.setStyleSheet("background-color: #1b5b06; padding: 0px; margin: 0px;")
 
     widget = GameTable()
     window.setCentralWidget(widget)
