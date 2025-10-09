@@ -5,11 +5,14 @@
 # WiSe 2025/26                       #
 # Software Assignment                #
 ######################################
+import sys
+import os
 
-from core.player import Player, Dealer
-from core.cards import Card
+sys.path.append("../")
+from player import Player, Dealer
+from cards import Card
 import random
-import core.login_panda as login_panda
+import login_panda as login_panda
 from pprint import pprint
 
 dummy_player = Player("dummy")
@@ -101,10 +104,11 @@ class Game:
 
     def place_bet(self):                                                #Places bet
         if self.player.score == 0:
+            print("U LOST! NO MONEY LEFT")
             return
         self.player.score -= self.bet
-        self.start_game()
         self.phase_up()
+        self.start_game()
 
     def add_bet(self):                                                  # + Button to higher bet
         """
@@ -125,7 +129,7 @@ class Game:
         
     '''------------------Player actions <phase 1>------------------'''   
 
-    def add_on_click(self):                                             #Hit --> draw_card() and if is_bust() --> dealer_draw()
+    def add_on_click(self):                                            #Hit --> draw_card() and if is_bust() --> dealer_draw()
         if self.phase != 1:
             return
         else:
@@ -170,8 +174,11 @@ class Game:
 
     '''------------------AI Plays------------------'''
 
-    def toggle_ai(self):                                                #toggles AI on button click
+    def toggle_ai(self):  
+        print(self.ai_play)                                              #toggles AI on button click
         self.ai_play = (self.ai_play == False)
+        print("-----after-----")
+        print(self.ai_play)
     
     def ai_plays(self):                                                 #AI Plays for Player if turned True --> player_stands()
         while self.calculate_hand(self.player) < 17:
@@ -220,6 +227,7 @@ class Game:
             self.update_status(self.player, "LOST")
             self.update_status(self.dealer, "WIN")
             self.save_score()
+            print("New score: ", self.player.score)
             print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
         
@@ -228,6 +236,8 @@ class Game:
             self.update_status(self.dealer, "LOST")
             self.player.score += self.bet * 2
             self.save_score()
+            print("New score: ", self.player.score)
+
             print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
         
@@ -236,6 +246,7 @@ class Game:
             self.update_status(self.dealer, "PUSH")
             self.player.score += self.bet
             self.save_score()
+            print("New score: ", self.player.score)
             print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
         
@@ -244,6 +255,7 @@ class Game:
             self.update_status(self.dealer, "LOST")
             self.player.score += self.bet * 2
             self.save_score()
+            print("New score: ", self.player.score)
             #check history best and save
             print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
@@ -252,6 +264,7 @@ class Game:
             self.update_status(self.dealer, "WIN")
             print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             self.save_score()
+            print("New score: ", self.player.score)
             return
 
 
@@ -301,7 +314,7 @@ class Game:
             print("Save Error:", e)
 
 
-    def load_allscores(self):                                           #Load all Scores
+    def load_all_scores(self):                                           #Load all Scores
         try:
             return login_panda.list_scores(as_df = False)
         except Exception:
@@ -317,3 +330,4 @@ if __name__ == '__main__':
 
     # Example for how we might test your program:
     game = Game(dummy_player)                                           # create new game
+    
