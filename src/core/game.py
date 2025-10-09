@@ -41,7 +41,8 @@ class Game:
     def print_card(self, hand_owner):
         if hasattr(hand_owner, "name"):
             print(hand_owner.name, [(card.rank, card.suit) for card in hand_owner.hand])
-            print(len(hand_owner.hand))
+            print("Your current Hand value is: ", self.calculate_hand(hand_owner))
+            print("\n")
         else:
             print("deck", [(card.rank, card.suit) for card in hand_owner])
             print(len(hand_owner))
@@ -76,18 +77,32 @@ class Game:
         self.dealer.status = "START"
         self.bet = 100
         self.phase = 0
+        print("Your current Score is: ", self.player.score)
+        print("Your bet for the next game is: ", self.bet)
+        print("\n")
+
+        print(r'If you want to bet more or less type "game.add_bet()" or "game.minus_bet()!')
+        print(r'If you want to let an AI play for you or want to toggle it off again type "game.toggle_ai()"')
+        print(r'When your happy with your bet and your AI mode type "game.place_bet()" to start the game!')
+        print("\n")
+        print("\n")
 
 
     def initialize_game(self):                                          #New game / Start Game / Play Again  --> start_game() and place_bet() + / - and reset_round()
         self.reset_round()
-        pprint(vars(self))
 
         
     def start_game(self):                                               #Bet is Placed --> Deal Cards --> deal_initial_hands()        
         self.deal_initial_hands(self.player)
         self.print_card(self.player)
+
         self.deal_initial_hands(self.dealer)
         self.print_card(self.dealer)
+
+        print(r'If you want to hit (pull another card) type "game.add_on_click()"')
+        print(r'When your happy with your hand and want to end your turn type "game.player_stands()"')
+        print("\n")
+        print("\n")
 
         self.dealer.status = "in-game"
         self.player.status = "in-game"
@@ -104,26 +119,30 @@ class Game:
 
     def place_bet(self):                                                #Places bet
         if self.player.score == 0:
-            print("U LOST! NO MONEY LEFT")
+            print("YOU LOST! NO MONEY LEFT")
             return
         self.player.score -= self.bet
         self.phase_up()
         self.start_game()
 
     def add_bet(self):                                                  # + Button to higher bet
-        """
-        when +100 clicked, self.bet += 100"""
         if self.player.score > self.bet:
             self.bet += 100
+            print("Your bet for the next game is: ", self.bet)
+            print("\n")
         else:
-            print("ur broke")
+            print("ur broke lol")
+            print("\n")
 
 
     def minus_bet(self):                                                # - Button to lower bet
         if self.bet > 100:
             self.bet -= 100
+            print("Your bet for the next game is: ", self.bet)
+            print("\n")
         else:
-            print("u have to bet something")
+            print("well... you have to bet at least something")
+            print("\n")
 
 
         
@@ -136,15 +155,21 @@ class Game:
             self.player.hand.append(self.draw_card())
             if self.is_bust(self.player):
                 self.phase_up()  #phase 2 -> Dealer
+                self.print_card(self.player)
                 self.dealer_draw() #reveal dealer card -> dealer actions
+                return
         self.print_card(self.player)
-        print(self.calculate_hand(self.player))
+        print(r'If you want to hit (pull another card) type "game.add_on_click()"')
+        print(r'When your happy with your hand and want to end your turn type "game.player_stands()"')
+        print("\n")
+        print("\n")
+
         
     def player_stands(self):                                            #Stand --> dealer_draw()
         self.phase_up() #phase 2 -> dealer
-        self.dealer_draw()
         self.print_card(self.player)
-        print(self.calculate_hand(self.player))
+        self.dealer_draw()
+
         
 
     
@@ -166,9 +191,8 @@ class Game:
                         break
                     
             self.phase_up() # phase 3 -> calc score
+            self.print_card(self.dealer)
             self.calc_winner()
-        self.print_card(self.dealer)
-        print(self.calculate_hand(self.dealer))
 
 
 
@@ -227,8 +251,13 @@ class Game:
             self.update_status(self.player, "LOST")
             self.update_status(self.dealer, "WIN")
             self.save_score()
+            print(" +----------------------------------+ \n |              U LOST              | \n +----------------------------------+")
+            print("\n")
             print("New score: ", self.player.score)
-            print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
+            print("\n")
+            print("\n")
+            print(r'If you want to play another game type "game.reset_round()"')
+            print("\n")
             return
         
         if d_total > 21:                                                #Dealer Bust Player Win
@@ -236,9 +265,14 @@ class Game:
             self.update_status(self.dealer, "LOST")
             self.player.score += self.bet * 2
             self.save_score()
+            print(" +---------------------------------+ \n |              U WON              | \n +---------------------------------+")
+            print("\n")
             print("New score: ", self.player.score)
+            print("\n")
+            print("\n")
+            print(r'If you want to play another game type "game.reset_round()"')
+            print("\n")
 
-            print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
             return
         
         if p_total == d_total:                                          #PUSH
@@ -246,8 +280,13 @@ class Game:
             self.update_status(self.dealer, "PUSH")
             self.player.score += self.bet
             self.save_score()
+            print(" +--------------------------------+ \n |              PUSH              | \n +--------------------------------+")
+            print("\n")
             print("New score: ", self.player.score)
-            print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
+            print("\n")
+            print("\n")
+            print(r'If you want to play another game type "game.reset_round()"')
+            print("\n")
             return
         
         if p_total > d_total:                                           #Player Win
@@ -255,16 +294,25 @@ class Game:
             self.update_status(self.dealer, "LOST")
             self.player.score += self.bet * 2
             self.save_score()
+            print(" +---------------------------------+ \n |              U WON              | \n +---------------------------------+")
+            print("\n")
             print("New score: ", self.player.score)
-            #check history best and save
-            print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
+            print("\n")
+            print("\n")
+            print(r'If you want to play another game type "game.reset_round()"')
+            print("\n")
             return
         else:                                                           #Dealer Win
             self.update_status(self.player, "LOST")
             self.update_status(self.dealer, "WIN")
-            print("end game, player: " + str(p_total) + self.player.status + ". Dealer: "+ str(d_total) + self.dealer.status)
+            print(" +----------------------------------+ \n |              U LOST              | \n +----------------------------------+")
             self.save_score()
+            print("\n")
             print("New score: ", self.player.score)
+            print("\n")
+            print("\n")
+            print(r'If you want to play another game type "game.reset_round()"')
+            print("\n")
             return
 
 
@@ -329,5 +377,7 @@ if __name__ == '__main__':
     '''
 
     # Example for how we might test your program:
+    print(" +---------------------------------------------------------+ \n |              ♠ ♣  B L A C K   J A C K  ♥ ♦              | \n +---------------------------------------------------------+")
+    print("\n")
     game = Game(dummy_player)                                           # create new game
     
