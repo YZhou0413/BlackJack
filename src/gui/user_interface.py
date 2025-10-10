@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
 )
 from menu import Menu
 from login import Login
+from place_bet import PlaceBet
 
 
 # Represents app window
@@ -49,16 +50,28 @@ class MainWindow(QMainWindow):
         self.login = Login()
         self.pages.addWidget(self.login)
 
+        # add place bet page
+        self.place_bet = PlaceBet()
+        self.pages.addWidget(self.place_bet)
+
         # connect login button in menu with login page
         menu.open_login_signal.connect(self.open_login_view)
+
+        # connect signin button on login page with place bet view
+        self.login.open_place_bet_signal.connect(self.open_place_bet_view)
 
         # set menu as initial central widget of main window
         self.setCentralWidget(self.pages)
 
 
     # SIGNAL HANDLER METHODS
+    # sets login page as current page
     def open_login_view(self):
         self.pages.setCurrentWidget(self.login)
+
+    # sets place bet page as current page
+    def open_place_bet_view(self):
+        self.pages.setCurrentWidget(self.place_bet)
 
 
 if __name__ == '__main__':

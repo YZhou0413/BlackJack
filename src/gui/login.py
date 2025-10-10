@@ -1,3 +1,4 @@
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QWidget,
     QPushButton,
@@ -9,6 +10,8 @@ from PySide6.QtWidgets import (
 from login_approve_dialog import ApproveDialog
 
 class Login(QWidget):
+    # create signal for opening place bet view
+    open_place_bet_signal = Signal()
 
     # CONSTRUCTOR
     def __init__(self):
@@ -60,9 +63,10 @@ class Login(QWidget):
         if not Login.check_username(username):
             print("username not valid")
             self.form_info.setText("username \"%s\" invalid" % username)
+            return None
 
         # check valid password
-        elif not Login.check_password(password):
+        if not Login.check_password(password):
             print("password not valid")
             self.form_info.setText("password invalid")
             return None
@@ -96,8 +100,8 @@ class Login(QWidget):
         #---- grant access to game ----
         # if credentials match or user approves account creation
         # send signal for showing place bet page
+        self.open_place_bet_signal.emit()
         print("Load player data and open bet page")
-        self.form_info.setText("Access to game granted. Connecting to game...") # for testing only
         return None
 
 
