@@ -1,13 +1,11 @@
 # Python cache
 __pycache__/
 *.py[cod]
+**/__pycache__
 
 # pytest cache
 ./test/__pycache__
 *.pyc
 
 # DS Store
-.DS_Store
-src/.DS_Store
-src/core/.DS_Store
-src/gui/.DS_Store
+**/.DS_Store
