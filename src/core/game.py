@@ -6,7 +6,6 @@
 # Software Assignment                #
 ######################################
 import sys
-import os
 
 sys.path.append("../")
 from player import Player, Dealer

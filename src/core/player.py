@@ -75,14 +75,8 @@ class Player:
             return False
         return self.password_hash == self.hash_password(password)
 
-    def update_from_input(self, new_info, new_val):
-        pass
-
-    def update_to_somewhere(self, info_to_save, new_val):
-        pass 
 
 class Dealer(Player):
-    """Temporary for test"""
     def __init__(self):
         super().__init__("Dealer")
         self.hand = []
