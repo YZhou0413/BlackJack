@@ -2,7 +2,7 @@ import sys
 import os
 from PySide6.QtWidgets import (
     QGraphicsView, QGraphicsScene, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QMainWindow, QApplication
+    QLabel, QMainWindow, QApplication, QPushButton
 )
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QPainter, QColor
@@ -10,9 +10,9 @@ from PySide6.QtGui import QPainter, QColor
 # Add src to sys.path if running from gui folder
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from core.game import Game
-from core.cards import Card
-from core.player import Player, Dealer
+from src.core.game import Game
+from src.core.cards import Card
+from src.core.player import Player, Dealer
 
 # Dummy objects for testing
 def dummy_deck():
@@ -107,21 +107,46 @@ class GameTable(QWidget):
     def __init__(self):
         super().__init__()
         self.setFixedSize(QSize(GameTable.WINDOW_FIXED_WIDTH, GameTable.WINDOW_FIXED_HEIGHT))
-        self.setup_ui()
-
-    def setup_ui(self):
-        self.vLayout = QVBoxLayout(self)
 
         # Dealer and player hands
         self.dealer_card_view = PlayerHandWidget(dummy_dealer())
         self.player_card_view = PlayerHandWidget(dummy_player())
 
+        #---- setup middle widget ----
+        # controls widget containing status info and player action buttons
+        self.controls = QWidget()
+        self.controls.setFixedHeight(170)
+
+        # status field
+        self.status_info_field = QLabel("Good Luck!")
+        self.status_info_field.setFixedSize(QSize(200, 50))
+
+        # setup player action buttons
+        hit_button = QPushButton("Hit")
+        hit_button.clicked.connect(lambda : print("pressed hit"))
+        stand_button = QPushButton("Stand")
+        stand_button.clicked.connect(lambda : print("pressed stand"))
+
+        # setup buttons container layout
+        buttons_container = QWidget()
+        buttons_layout = QHBoxLayout(buttons_container)
+        buttons_layout.addWidget(hit_button)
+        buttons_layout.addWidget(stand_button)
+        buttons_layout.setAlignment(buttons_container, Qt.AlignHCenter)
+
+        # setup layout for controls widget
+        controls_layout = QHBoxLayout()
+        controls_layout.addWidget(self.status_info_field)
+        controls_layout.addWidget(buttons_container)
+        self.controls.setLayout(controls_layout)
+
+        # setup gametable layout
+        self.vLayout = QVBoxLayout(self)
         self.vLayout.addWidget(self.dealer_card_view)
-        # Placeholder widget for spacing
-        self.placeholder = QWidget()
-        self.placeholder.setFixedHeight(170)
-        self.vLayout.addWidget(self.placeholder)
+        self.vLayout.addWidget(self.controls)
         self.vLayout.addWidget(self.player_card_view)
+
+        # set background color to casino table green
         self.setStyleSheet(" background-color: #0B7D0B ;padding: 0px; margin: 0px;")
 
 
