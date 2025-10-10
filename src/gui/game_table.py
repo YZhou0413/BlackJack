@@ -61,26 +61,35 @@ class PlayerHandWidget(QWidget):
 
     def __init__(self, hand_owner):
         super().__init__()
+
+        # save reference to the hand owner and save their name
         self.owner = hand_owner
         self.owner_name = hand_owner.name if hasattr(hand_owner, "score") else "Dealer"
-        self.vLayout = QVBoxLayout()
+
+        # create horizontal layout for player hand
         self.hLayout = QHBoxLayout()
-        self.setup_ui()
-
-    def setup_ui(self):
         self.setLayout(self.hLayout)
+        self.setFixedHeight(int(PlayerHandWidget.HAND_FIXED_HEIGHT))
 
-        # Stats area
+        # ---- Create stats area ----
+        # set vertical layout for stats area
+        self.vLayout = QVBoxLayout()
         self.stats_area = QWidget(parent=self)
         self.stats_area.setLayout(self.vLayout)
-        self.setFixedHeight(int(PlayerHandWidget.HAND_FIXED_HEIGHT))
 
         self.stats_area.setFixedHeight(150)
         self.stats_area.setFixedWidth(180)
 
+        # ------> layout of DEALER info
+        # if the owner of this hand widget is an instance of Dealer
+        # set name tag accordingly
         if isinstance(self.owner, Dealer):
             name_tag = QLabel('Dealer')
             self.vLayout.addWidget(name_tag)
+
+        # ------> layout of PLAYER (USER) info
+        # else if the owner is an instance of Player, show name, score
+        # and highscore of the user
         elif isinstance(self.owner, Player):
             name_tag = QLabel(f'{self.owner_name}')
             score_tag = QLabel("score: " + f'{self.owner.score}')
@@ -88,12 +97,11 @@ class PlayerHandWidget(QWidget):
             self.vLayout.addWidget(name_tag)
             self.vLayout.addWidget(score_tag)
             self.vLayout.addWidget(best_tag)
-            
 
         # Add stats area to layout
         self.hLayout.addWidget(self.stats_area)
 
-        # Card view
+        # ---- add card view to hand widget ----
         self.card_widget = CardView()
         self.hLayout.addWidget(self.card_widget)
         self.setStyleSheet("border: 1px solid red; padding: 0px; margin: 0px;")
@@ -104,6 +112,7 @@ class GameTable(QWidget):
     WINDOW_FIXED_WIDTH = 700
     WINDOW_FIXED_HEIGHT = 490
 
+    # CONSTRUCTOR
     def __init__(self):
         super().__init__()
         self.setFixedSize(QSize(GameTable.WINDOW_FIXED_WIDTH, GameTable.WINDOW_FIXED_HEIGHT))
@@ -140,7 +149,7 @@ class GameTable(QWidget):
         controls_layout.addWidget(buttons_container)
         self.controls.setLayout(controls_layout)
 
-        # setup gametable layout
+        # ---- setup gametable layout ----
         self.vLayout = QVBoxLayout(self)
         self.vLayout.addWidget(self.dealer_card_view)
         self.vLayout.addWidget(self.controls)
