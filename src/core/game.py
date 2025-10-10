@@ -9,10 +9,10 @@ import sys
 import os
 
 sys.path.append("../")
-from player import Player, Dealer
-from cards import Card
+from src.core.player import Player, Dealer
+from src.core.cards import Card
 import random
-import login_panda as login_panda
+import src.core.login_panda as login_panda
 from pprint import pprint
 
 dummy_player = Player("dummy")
