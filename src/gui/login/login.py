@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
     QApplication,
     QTextEdit
 )
-from login_approve_dialog import ApproveDialog
+from src.gui.login.login_approve_dialog import ApproveDialog
 
 class Login(QWidget):
     # create signal for opening place bet view

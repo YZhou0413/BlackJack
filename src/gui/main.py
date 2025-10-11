@@ -13,8 +13,8 @@ from PySide6.QtWidgets import (
     QStackedWidget
 )
 from menu import Menu
-from login import Login
-from place_bet import PlaceBet
+from src.gui.login.login import Login
+from src.gui.place_bet import PlaceBet
 
 
 # Represents app window

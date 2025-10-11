@@ -1,11 +1,10 @@
 import sys
 import os
 from PySide6.QtWidgets import (
-    QGraphicsView, QGraphicsScene, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QMainWindow, QApplication, QPushButton, QGraphicsItem, QGraphicsPixmapItem, QGraphicsProxyWidget
+    QWidget, QVBoxLayout, QHBoxLayout,
+    QLabel, QMainWindow, QApplication, QPushButton,
 )
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QPainter, QColor, QPixmap
 
 # Add src to sys.path if running from gui folder
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -13,118 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.core.game import Game
 from src.core.cards import Card
 from src.core.player import Player, Dealer
-from card_ui import CardUI
-
-# Represents view of hands
-class CardView(QGraphicsView):
-    VIEW_WIDTH = 450
-    VIEW_HEIGHT = 150
-
-    # set horizontal gap between cards
-    X_GAP = 5
-
-    def __init__(self):
-        super().__init__()
-
-        # ---- setup cards view ----
-        self.setFixedSize(QSize(int(CardView.VIEW_WIDTH), int(CardView.VIEW_HEIGHT)))
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-
-        self.scene_ = QGraphicsScene(self)
-        self.scene_.setBackgroundBrush(QColor("#BDBAB9"))
-        self.setScene(self.scene_)
-
-    def update_view(self):
-        pass
-
-    def grey_up_view(self):
-        pass
-
-    # adds a card to this cardview
-    def add_card_to_view(self, card):
-        # get position index of new card from number of card
-        position_id = len(self.scene_.items())
-        # create card ui widget
-        card_widget = CardUI(card)
-        # add card widget to scene and get card scene item (corresponding to card widget)
-        card_scene_item = self.scene_.addWidget(card_widget)
-        # set position of card item
-        card_scene_item.setPos(position_id * (card_widget.width() + CardView.X_GAP), 0)
-
-    # displays initial cards of dealer
-    def initialize_dealer_hand(self, dealer_hand : list):
-        # show initial cards
-        self.initialize_user_hand(dealer_hand)
-
-        # get proxy widget of second card
-        # (last added card, which comes first in .items() list)
-        card_proxy = self.scene_.items()[0]
-
-        # cover up card
-        if isinstance(card_proxy, QGraphicsProxyWidget):
-            card_proxy.widget().revealed = False
-            card_proxy.adjustSize()
-
-
-    # displays initial cards of user
-    def initialize_user_hand(self, user_hand : list):
-        for card in user_hand:
-            self.add_card_to_view(card)
-
-
-# Represents the player info and view of hand
-class PlayerHandWidget(QWidget):
-    HAND_FIXED_WIDTH = 700
-    HAND_FIXED_HEIGHT = 150  # hand takes 30% window height
-
-    def __init__(self, hand_owner):
-        super().__init__()
-
-        # save reference to the hand owner and save their name
-        self.owner = hand_owner
-        self.owner_name = hand_owner.name if hasattr(hand_owner, "score") else "Dealer"
-
-        # create horizontal layout for player hand
-        self.hLayout = QHBoxLayout()
-        self.setLayout(self.hLayout)
-        self.setFixedHeight(int(PlayerHandWidget.HAND_FIXED_HEIGHT))
-
-        # ---- Create stats area ----
-        # set vertical layout for stats area
-        self.vLayout = QVBoxLayout()
-        self.stats_area = QWidget(parent=self)
-        self.stats_area.setLayout(self.vLayout)
-
-        self.stats_area.setFixedHeight(150)
-        self.stats_area.setFixedWidth(180)
-
-        # ------> layout of DEALER info
-        # if the owner of this hand widget is an instance of Dealer
-        # set name tag accordingly
-        if isinstance(self.owner, Dealer):
-            name_tag = QLabel('Dealer')
-            self.vLayout.addWidget(name_tag)
-
-        # ------> layout of PLAYER (USER) info
-        # else if the owner is an instance of Player, show name, score
-        # and highscore of the user
-        elif isinstance(self.owner, Player):
-            name_tag = QLabel(f'{self.owner_name}')
-            score_tag = QLabel("score: " + f'{self.owner.score}')
-            best_tag = QLabel("history best: " + f'{self.owner.best_score}')
-            self.vLayout.addWidget(name_tag)
-            self.vLayout.addWidget(score_tag)
-            self.vLayout.addWidget(best_tag)
-
-        # Add stats area to layout
-        self.hLayout.addWidget(self.stats_area)
-
-        # ---- add card view to hand widget ----
-        self.card_widget = CardView()
-        self.hLayout.addWidget(self.card_widget)
-        self.setStyleSheet("border: 1px solid red; padding: 0px; margin: 0px;")
-
+from src.gui.game_ui.player_area import PlayerHandWidget
 
 # Represents game page
 class GameTable(QWidget):

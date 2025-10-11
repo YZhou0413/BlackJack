@@ -40,7 +40,7 @@ def get_path_from_card(card):
 
 # Represents a card ui instance
 class CardUI(QLabel):
-    PNG_PATH = "./PNG-cards/"
+    PNG_PATH = "../PNG-cards/"
     # full path to front of image (missing part added in constructor)
     FRONT_PATH = ""
     # full path to back of card image
