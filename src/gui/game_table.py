@@ -2,10 +2,10 @@ import sys
 import os
 from PySide6.QtWidgets import (
     QGraphicsView, QGraphicsScene, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QMainWindow, QApplication, QPushButton
+    QLabel, QMainWindow, QApplication, QPushButton, QGraphicsItem, QGraphicsPixmapItem
 )
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QPainter, QColor
+from PySide6.QtGui import QPainter, QColor, QPixmap
 
 # Add src to sys.path if running from gui folder
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -13,48 +13,96 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.core.game import Game
 from src.core.cards import Card
 from src.core.player import Player, Dealer
+from card_ui import CardUI
 
-# Dummy objects for testing
-def dummy_deck():
-    return {
-        "2": Card("2", "Spades"),
-        "8": Card("8", "Diamonds"),
-        "10": Card("10", "Hearts"),
-        "A": Card("A", "Clubs"),
-        "5": Card("5", "Spades"),
-        "J": Card("J", "Clubs"),
-        "9": Card("9", "Hearts")
-    }
+# class CardView(QWidget):
+#     VIEW_WIDTH = 500
+#     VIEW_HEIGHT = 150
+#
+#     def __init__(self):
+#         super().__init__()
+#
+#         # ---- setup cards view ----
+#         self.setFixedSize(QSize(int(CardView.VIEW_WIDTH), int(CardView.VIEW_HEIGHT)))
+#
+#         self.cards_layout = QHBoxLayout()
+#         self.cards_layout.setAlignment(self, Qt.AlignHCenter)
+#
+#         self.cards_layout.addWidget(CardUI(Card("J", "Diamonds")))
+#         self.cards_layout.addWidget(CardUI(Card("2", "Hearts")))
+#         self.cards_layout.addWidget(CardUI(Card("2", "Hearts")))
+#         self.cards_layout.addWidget(CardUI(Card("J", "Diamonds")))
+#         self.cards_layout.addWidget(CardUI(Card("J", "Diamonds")))
+#
+#         self.setLayout(self.cards_layout)
+#         print("help")
+#
+#     def update_view(self):
+#         pass
+#
+#     def grey_up_view(self):
+#         pass
+#
+#     def add_card(self):
+#         print("add card")
+#
+#     def initialize_dealer_hand(self, dealer_hand : list):
+#         # pixmap = QPixmap(CardView.PNG_PATH + "2_of_clubs.png")
+#         # self.scene_.addWidget(pixmap)
+#         pass
+#
+#     # displays initial cards of user
+#     def initialize_user_hand(self, user_hand : list):
+#         for card in user_hand:
+#             self.cards_layout.addWidget(CardUI(card))
+#             print(card)
 
-def dummy_player():
-    return Player("Tester")
 
-def dummy_dealer():
-    return Dealer()
-
-
+# Represents view of hands
 class CardView(QGraphicsView):
-    VIEW_WIDTH = 500
+    VIEW_WIDTH = 450
     VIEW_HEIGHT = 150
+
+    # set horizontal gap between cards
+    X_GAP = 5
 
     def __init__(self):
         super().__init__()
-        self.setup_ui()
 
-    def setup_ui(self):
+        # ---- setup cards view ----
         self.setFixedSize(QSize(int(CardView.VIEW_WIDTH), int(CardView.VIEW_HEIGHT)))
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
         self.scene_ = QGraphicsScene(self)
-        self.setScene(self.scene_)
         self.scene_.setBackgroundBrush(QColor("#BDBAB9"))
+        self.setScene(self.scene_)
+
     def update_view(self):
         pass
 
     def grey_up_view(self):
         pass
 
+    def add_card(self):
+        print("add card")
 
+    # displays initial cards of dealer
+    def initialize_dealer_hand(self, dealer_hand : list):
+        pass
+
+    # displays initial cards of user
+    def initialize_user_hand(self, user_hand : list):
+        for index, card in enumerate(user_hand):
+            # create card ui widget
+            card_widget = CardUI(card)
+            # add card widget to scene and get card scene item (corresponding to card widget)
+            card_scene_item = self.scene_.addWidget(card_widget)
+            # set position of card item
+            card_scene_item.setPos(index * (card_widget.width() + CardView.X_GAP), 0)
+
+
+# Represents the player info and view of hand
 class PlayerHandWidget(QWidget):
     HAND_FIXED_WIDTH = 700
     HAND_FIXED_HEIGHT = 150  # hand takes 30% window height
@@ -107,7 +155,7 @@ class PlayerHandWidget(QWidget):
         self.setStyleSheet("border: 1px solid red; padding: 0px; margin: 0px;")
 
 
-
+# Represents game page
 class GameTable(QWidget):
     WINDOW_FIXED_WIDTH = 700
     WINDOW_FIXED_HEIGHT = 490
@@ -132,9 +180,9 @@ class GameTable(QWidget):
 
         # setup player action buttons
         hit_button = QPushButton("Hit")
-        hit_button.clicked.connect(lambda : print("pressed hit"))
+        hit_button.clicked.connect(self.draw_card)
         stand_button = QPushButton("Stand")
-        stand_button.clicked.connect(lambda : print("pressed stand"))
+        stand_button.clicked.connect(self.stand)
 
         # setup buttons container layout
         buttons_container = QWidget()
@@ -159,8 +207,59 @@ class GameTable(QWidget):
         self.setStyleSheet(" background-color: #0B7D0B ;padding: 0px; margin: 0px;")
 
 
+    # INSTANCE METHODS
+    def draw_card(self):
+        user_card_view = self.player_card_view.card_widget
+        user_card_view.add_card()
+        print("pressed hit")
+
+    def render_initial_hands(self):
+        #---- render DEALER hand ----
+
+        #---- render USER hand ----
+        user_cards_view = self.player_card_view.card_widget
+        user_hand = self.player_card_view.owner.hand
+        print(self.player_card_view.owner.name)
+
+        user_cards_view.initialize_user_hand(user_hand)
+
+
+    def stand(self):
+        print("pressed stand")
+
 
 if __name__ == "__main__":
+    # Dummy objects for testing
+    def dummy_deck():
+        return {
+            "2": Card("2", "Spades"),
+            "8": Card("8", "Diamonds"),
+            "10": Card("10", "Hearts"),
+            "A": Card("A", "Clubs"),
+            "5": Card("5", "Spades"),
+            "J": Card("J", "Clubs"),
+            "9": Card("9", "Hearts")
+        }
+
+    def dummy_player():
+        player = Player("Tester")
+        deck = dummy_deck()
+
+        # initialize player hand
+        player.hand = [deck["2"], deck["10"]]
+        return player
+
+    def dummy_dealer():
+        # dealer = Dealer
+        # deck = dummy_deck()
+        #
+        # # initialize dealer hand
+        # dealer.hand = [deck]
+        return Dealer()
+
+
+    # ---- open gametable window ----
+
     app = QApplication(sys.argv)
 
     # Dummy main window
@@ -172,6 +271,9 @@ if __name__ == "__main__":
     widget = GameTable()
     window.setCentralWidget(widget)
     window.show()
+
+    # test displaying initial hands
+    widget.render_initial_hands()
 
     sys.exit(app.exec())
 
