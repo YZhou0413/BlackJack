@@ -41,8 +41,16 @@ class CardView(QGraphicsView):
     def grey_up_view(self):
         pass
 
-    def add_card(self):
-        print("add card")
+    # adds a card to this cardview
+    def add_card_to_view(self, card):
+        # get position index of new card from number of card
+        position_id = len(self.scene_.items())
+        # create card ui widget
+        card_widget = CardUI(card)
+        # add card widget to scene and get card scene item (corresponding to card widget)
+        card_scene_item = self.scene_.addWidget(card_widget)
+        # set position of card item
+        card_scene_item.setPos(position_id * (card_widget.width() + CardView.X_GAP), 0)
 
     # displays initial cards of dealer
     def initialize_dealer_hand(self, dealer_hand : list):
@@ -61,13 +69,8 @@ class CardView(QGraphicsView):
 
     # displays initial cards of user
     def initialize_user_hand(self, user_hand : list):
-        for index, card in enumerate(user_hand):
-            # create card ui widget
-            card_widget = CardUI(card)
-            # add card widget to scene and get card scene item (corresponding to card widget)
-            card_scene_item = self.scene_.addWidget(card_widget)
-            # set position of card item
-            card_scene_item.setPos(index * (card_widget.width() + CardView.X_GAP), 0)
+        for card in user_hand:
+            self.add_card_to_view(card)
 
 
 # Represents the player info and view of hand
@@ -133,9 +136,14 @@ class GameTable(QWidget):
         super().__init__()
         self.setFixedSize(QSize(GameTable.WINDOW_FIXED_WIDTH, GameTable.WINDOW_FIXED_HEIGHT))
 
+        # references to dummy player and dummy dealer for testing
+        # todo: get references from game instance
+        self.player = dummy_player()
+        self.dealer = dummy_dealer()
+
         # Dealer and player hands
-        self.dealer_card_view = PlayerHandWidget(dummy_dealer())
-        self.player_card_view = PlayerHandWidget(dummy_player())
+        self.dealer_card_view = PlayerHandWidget(self.dealer)
+        self.player_card_view = PlayerHandWidget(self.player)
 
         #---- setup middle widget ----
         # controls widget containing status info and player action buttons
@@ -176,11 +184,20 @@ class GameTable(QWidget):
 
 
     # INSTANCE METHODS
+    # let user draw card and display card in the gui
     def draw_card(self):
-        user_card_view = self.player_card_view.card_widget
-        user_card_view.add_card()
-        print("pressed hit")
+        # let player draw card
+        # todo: connect with Backend, call add_on_click on game instance
+        self.player.hand.append(dummy_deck()["5"])
 
+        # save this new card
+        new_card = self.player.hand[-1]
+
+        # add card to player view
+        user_card_view = self.player_card_view.card_widget
+        user_card_view.add_card_to_view(new_card)
+
+    # renders initial hands of dealer and user
     def render_initial_hands(self):
         #---- render DEALER hand ----
         dealer_cards_view = self.dealer_card_view.card_widget
