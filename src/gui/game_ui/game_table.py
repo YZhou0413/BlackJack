@@ -13,6 +13,7 @@ from src.core.game import Game
 from src.core.cards import Card
 from src.core.player import Player, Dealer
 from src.gui.game_ui.player_area import PlayerHandWidget
+from src.gui.game_ui.test_dummys import dummy_player, dummy_dealer, dummy_deck
 
 # Represents game page
 class GameTable(QWidget):
@@ -22,7 +23,7 @@ class GameTable(QWidget):
     # CONSTRUCTOR
     def __init__(self):
         super().__init__()
-        self.setFixedSize(QSize(GameTable.WINDOW_FIXED_WIDTH, GameTable.WINDOW_FIXED_HEIGHT))
+        self.setMaximumSize(QSize(GameTable.WINDOW_FIXED_WIDTH, GameTable.WINDOW_FIXED_HEIGHT))
 
         # references to dummy player and dummy dealer for testing
         # todo: get references from game instance
@@ -30,13 +31,13 @@ class GameTable(QWidget):
         self.dealer = dummy_dealer()
 
         # Dealer and player hands
-        self.dealer_card_view = PlayerHandWidget(self.dealer)
-        self.player_card_view = PlayerHandWidget(self.player)
+        self.dealer_area = PlayerHandWidget(self.dealer)
+        self.player_area = PlayerHandWidget(self.player)
 
         #---- setup middle widget ----
         # controls widget containing status info and player action buttons
         self.controls = QWidget()
-        self.controls.setFixedHeight(170)
+        self.controls.setMaximumHeight(170)
 
         # status field
         self.status_info_field = QLabel("Good Luck!")
@@ -63,9 +64,9 @@ class GameTable(QWidget):
 
         # ---- setup gametable layout ----
         self.vLayout = QVBoxLayout(self)
-        self.vLayout.addWidget(self.dealer_card_view)
+        self.vLayout.addWidget(self.dealer_area)
         self.vLayout.addWidget(self.controls)
-        self.vLayout.addWidget(self.player_card_view)
+        self.vLayout.addWidget(self.player_area)
 
         # set background color to casino table green
         self.setStyleSheet(" background-color: #0B7D0B ;padding: 0px; margin: 0px;")
@@ -82,20 +83,20 @@ class GameTable(QWidget):
         new_card = self.player.hand[-1]
 
         # add card to player view
-        user_card_view = self.player_card_view.card_widget
+        user_card_view = self.player_area.card_widget
         user_card_view.add_card_to_view(new_card)
 
     # renders initial hands of dealer and user
     def render_initial_hands(self):
         #---- render DEALER hand ----
-        dealer_cards_view = self.dealer_card_view.card_widget
-        dealer_hand = self.dealer_card_view.owner.hand
+        dealer_cards_view = self.dealer_area.card_widget
+        dealer_hand = self.dealer_area.owner.hand
 
         dealer_cards_view.initialize_dealer_hand(dealer_hand)
 
         #---- render USER hand ----
-        user_cards_view = self.player_card_view.card_widget
-        user_hand = self.player_card_view.owner.hand
+        user_cards_view = self.player_area.card_widget
+        user_hand = self.player_area.owner.hand
 
         user_cards_view.initialize_user_hand(user_hand)
 
@@ -105,35 +106,6 @@ class GameTable(QWidget):
 
 
 if __name__ == "__main__":
-    # Dummy objects for testing
-    def dummy_deck():
-        return {
-            "2": Card("2", "Spades"),
-            "8": Card("8", "Diamonds"),
-            "10": Card("10", "Hearts"),
-            "A": Card("A", "Clubs"),
-            "5": Card("5", "Spades"),
-            "J": Card("J", "Clubs"),
-            "9": Card("9", "Hearts")
-        }
-
-    def dummy_player():
-        player = Player("Tester")
-        deck = dummy_deck()
-
-        # initialize player hand
-        player.hand = [deck["2"], deck["10"]]
-        return player
-
-    def dummy_dealer():
-        dealer = Dealer
-        deck = dummy_deck()
-
-        # initialize dealer hand
-        dealer.hand = [deck["8"], deck["A"]]
-        return dealer
-
-
     # ---- open gametable window ----
 
     app = QApplication(sys.argv)

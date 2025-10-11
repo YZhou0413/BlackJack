@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QStackedWidget
 )
 from menu import Menu
+from src.gui.game_ui.game_table import GameTable
 from src.gui.login.login import Login
 from src.gui.place_bet import PlaceBet
 
@@ -54,11 +55,18 @@ class MainWindow(QMainWindow):
         self.place_bet = PlaceBet()
         self.pages.addWidget(self.place_bet)
 
+        # add game view page
+        self.game = GameTable()
+        self.pages.addWidget(self.game)
+
         # connect login button in menu with login page
         menu.open_login_signal.connect(self.open_login_view)
 
         # connect signin button on login page with place bet view
         self.login.open_place_bet_signal.connect(self.open_place_bet_view)
+
+        # connect lock in button on place bet page with game view
+        self.place_bet.open_game_view_signal.connect(self.open_game_view)
 
         # set menu as initial central widget of main window
         self.setCentralWidget(self.pages)
@@ -72,6 +80,11 @@ class MainWindow(QMainWindow):
     # sets place bet page as current page
     def open_place_bet_view(self):
         self.pages.setCurrentWidget(self.place_bet)
+
+    # sets place bet page as current page
+    def open_game_view(self):
+        # start game
+        self.pages.setCurrentWidget(self.game)
 
 
 if __name__ == '__main__':

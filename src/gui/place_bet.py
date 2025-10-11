@@ -1,3 +1,4 @@
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QWidget,
     QTextEdit,
@@ -10,6 +11,9 @@ from PySide6.QtWidgets import (
 class PlaceBet(QWidget):
     # default placed bet after successfully signing up
     DEFAULT_START_BET = 100
+
+    # create signal for showing game view
+    open_game_view_signal = Signal()
 
     # CONSTRUCTOR
     def __init__(self):
@@ -163,6 +167,9 @@ class PlaceBet(QWidget):
         print("bet locked in, starting game...")
         print("(new balance saved in database)")
         # todo: connect to backend
+
+        # emit signal for opening game view
+        self.open_game_view_signal.emit()
 
 
 if __name__ == "__main__":
