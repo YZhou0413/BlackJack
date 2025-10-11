@@ -2,7 +2,7 @@ import sys
 import os
 from PySide6.QtWidgets import (
     QGraphicsView, QGraphicsScene, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QMainWindow, QApplication, QPushButton, QGraphicsItem, QGraphicsPixmapItem
+    QLabel, QMainWindow, QApplication, QPushButton, QGraphicsItem, QGraphicsPixmapItem, QGraphicsProxyWidget
 )
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QPainter, QColor, QPixmap
@@ -14,49 +14,6 @@ from src.core.game import Game
 from src.core.cards import Card
 from src.core.player import Player, Dealer
 from card_ui import CardUI
-
-# class CardView(QWidget):
-#     VIEW_WIDTH = 500
-#     VIEW_HEIGHT = 150
-#
-#     def __init__(self):
-#         super().__init__()
-#
-#         # ---- setup cards view ----
-#         self.setFixedSize(QSize(int(CardView.VIEW_WIDTH), int(CardView.VIEW_HEIGHT)))
-#
-#         self.cards_layout = QHBoxLayout()
-#         self.cards_layout.setAlignment(self, Qt.AlignHCenter)
-#
-#         self.cards_layout.addWidget(CardUI(Card("J", "Diamonds")))
-#         self.cards_layout.addWidget(CardUI(Card("2", "Hearts")))
-#         self.cards_layout.addWidget(CardUI(Card("2", "Hearts")))
-#         self.cards_layout.addWidget(CardUI(Card("J", "Diamonds")))
-#         self.cards_layout.addWidget(CardUI(Card("J", "Diamonds")))
-#
-#         self.setLayout(self.cards_layout)
-#         print("help")
-#
-#     def update_view(self):
-#         pass
-#
-#     def grey_up_view(self):
-#         pass
-#
-#     def add_card(self):
-#         print("add card")
-#
-#     def initialize_dealer_hand(self, dealer_hand : list):
-#         # pixmap = QPixmap(CardView.PNG_PATH + "2_of_clubs.png")
-#         # self.scene_.addWidget(pixmap)
-#         pass
-#
-#     # displays initial cards of user
-#     def initialize_user_hand(self, user_hand : list):
-#         for card in user_hand:
-#             self.cards_layout.addWidget(CardUI(card))
-#             print(card)
-
 
 # Represents view of hands
 class CardView(QGraphicsView):
@@ -89,7 +46,18 @@ class CardView(QGraphicsView):
 
     # displays initial cards of dealer
     def initialize_dealer_hand(self, dealer_hand : list):
-        pass
+        # show initial cards
+        self.initialize_user_hand(dealer_hand)
+
+        # get proxy widget of second card
+        # (last added card, which comes first in .items() list)
+        card_proxy = self.scene_.items()[0]
+
+        # cover up card
+        if isinstance(card_proxy, QGraphicsProxyWidget):
+            card_proxy.widget().revealed = False
+            card_proxy.adjustSize()
+
 
     # displays initial cards of user
     def initialize_user_hand(self, user_hand : list):
@@ -215,11 +183,14 @@ class GameTable(QWidget):
 
     def render_initial_hands(self):
         #---- render DEALER hand ----
+        dealer_cards_view = self.dealer_card_view.card_widget
+        dealer_hand = self.dealer_card_view.owner.hand
+
+        dealer_cards_view.initialize_dealer_hand(dealer_hand)
 
         #---- render USER hand ----
         user_cards_view = self.player_card_view.card_widget
         user_hand = self.player_card_view.owner.hand
-        print(self.player_card_view.owner.name)
 
         user_cards_view.initialize_user_hand(user_hand)
 
@@ -250,12 +221,12 @@ if __name__ == "__main__":
         return player
 
     def dummy_dealer():
-        # dealer = Dealer
-        # deck = dummy_deck()
-        #
-        # # initialize dealer hand
-        # dealer.hand = [deck]
-        return Dealer()
+        dealer = Dealer
+        deck = dummy_deck()
+
+        # initialize dealer hand
+        dealer.hand = [deck["8"], deck["A"]]
+        return dealer
 
 
     # ---- open gametable window ----

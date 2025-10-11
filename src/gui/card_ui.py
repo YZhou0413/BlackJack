@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QLabel, QSizePolicy
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
 
@@ -30,10 +30,10 @@ def get_path_from_card(card):
 
 
     # create filename from part strings
-    if rank.isalpha():
-        filename = f"{rank_string}_of_{suit_string}2.png"
-    else:
+    if rank.isnumeric() or rank == "A":
         filename = f"{rank_string}_of_{suit_string}.png"
+    else:
+        filename = f"{rank_string}_of_{suit_string}2.png"
 
     return filename
 
@@ -41,21 +41,58 @@ def get_path_from_card(card):
 # Represents a card ui instance
 class CardUI(QLabel):
     PNG_PATH = "./PNG-cards/"
+    # full path to front of image (missing part added in constructor)
+    FRONT_PATH = ""
+    # full path to back of card image
+    BACK_PATH = PNG_PATH + "back.png"
+    # height of card ui widget
     CARD_HEIGHT = 120
 
+
     # CONSTRUCTOR
-    def __init__(self, card, visible=True):
+    def __init__(self, card):
         super().__init__()
 
-        # get path of card image
-        self.card_image_path =  CardUI.PNG_PATH
-        self.card_image_path += get_path_from_card(card) if visible else "back.png"
-        print(self.card_image_path)
+        # set visibility of playing card
+        self._revealed = True
 
-        # create pixmap from card image
-        card_pixmap = QPixmap(self.card_image_path)
-        card_pixmap = card_pixmap.scaledToHeight(CardUI.CARD_HEIGHT, mode=Qt.SmoothTransformation)
+        # full path to front of image (missing part added in constructor)
+        self.front_path = CardUI.PNG_PATH + get_path_from_card(card)
 
-        # display pixmap wit QLabel and fit QLabel to size of the pixmap
-        self.setPixmap(card_pixmap)
-        self.setFixedSize(card_pixmap.size())
+        # set current card image path
+        self._current_path = self.front_path
+
+        # allows Qlabel to resize when pixmap size changes
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        # add pixmap to widget
+        self.set_pixmap_from_path(self._current_path)
+
+
+    # PROPERTIES
+    @property
+    def revealed(self):
+        return self._revealed
+
+    # changes revealed state of the card ui
+    @revealed.setter
+    def revealed(self, is_revealed):
+        # revealed state has changed...
+        if self.revealed != is_revealed:
+            # update revealed attribute
+            self._revealed = is_revealed
+            # update image path
+            self._current_path = self.front_path if self._revealed else CardUI.BACK_PATH
+            # update pixmap of this widget
+            self.set_pixmap_from_path(self._current_path)
+
+
+    # INSTANCE METHODS
+    # sets pixmap of this widget
+    def set_pixmap_from_path(self, img_path):
+        # creates pixmap from card image
+        pixmap = QPixmap(img_path)
+        pixmap = pixmap.scaledToHeight(CardUI.CARD_HEIGHT, mode=Qt.SmoothTransformation)
+
+        # add pixmap to QLabel and fit QLabel to size of the pixmap
+        self.setPixmap(pixmap)
+        self.resize(pixmap.size())
