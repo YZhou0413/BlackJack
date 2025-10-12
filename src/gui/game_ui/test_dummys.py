@@ -1,5 +1,6 @@
 from src.core.cards import Card
 from src.core.player import Player, Dealer
+from src.core.game import Game
 
 # Dummy objects for testing
 def dummy_deck():

@@ -27,8 +27,9 @@ class GameTable(QWidget):
 
         # references to dummy player and dummy dealer for testing
         # todo: get references from game instance
-        self.player = dummy_player()
-        self.dealer = dummy_dealer()
+        self._game = None
+        self._player = dummy_player()
+        self._dealer = dummy_dealer()
 
         # Dealer and player hands
         self.dealer_area = PlayerHandWidget(self.dealer)
@@ -54,7 +55,7 @@ class GameTable(QWidget):
         buttons_layout = QHBoxLayout(buttons_container)
         buttons_layout.addWidget(hit_button)
         buttons_layout.addWidget(stand_button)
-        buttons_layout.setAlignment(buttons_container, Qt.AlignHCenter)
+        buttons_layout.setAlignment(buttons_container, Qt.AlignmentFlag.AlignHCenter)
 
         # setup layout for controls widget
         controls_layout = QHBoxLayout()
@@ -70,7 +71,41 @@ class GameTable(QWidget):
 
         # set background color to casino table green
         self.setStyleSheet(" background-color: #0B7D0B ;padding: 0px; margin: 0px;")
-
+        
+        
+    @property
+    def game(self):
+        return self._game 
+    @game.setter
+    def game(self, new_game):
+        if type(new_game) is Game:
+            self._game = new_game
+            
+    @property
+    def dealer(self):
+        return self._dealer 
+    @dealer.setter
+    def dealer(self, new_dealer):
+        if type(new_dealer) is Dealer:
+            self._dealer = new_dealer
+    
+    @property
+    def player(self):
+        return self._player 
+    @player.setter
+    def player(self, new_player):
+        if type(new_player) is Player:
+            self._player = new_player
+    
+    def update_game_info(self):
+        self.dealer_area.owner = self.game.dealer
+        self.player_area.owner = self.game.player
+        
+        self.dealer_area.update_player_info()
+        self.player_area.update_player_info()
+        
+        
+        
 
     # INSTANCE METHODS
     # let user draw card and display card in the gui

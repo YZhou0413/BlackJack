@@ -63,7 +63,7 @@ class CardUI(QLabel):
         self._current_path = self.front_path
 
         # allows Qlabel to resize when pixmap size changes
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         # add pixmap to widget
         self.set_pixmap_from_path(self._current_path)
 
@@ -91,7 +91,7 @@ class CardUI(QLabel):
     def set_pixmap_from_path(self, img_path):
         # creates pixmap from card image
         pixmap = QPixmap(img_path)
-        pixmap = pixmap.scaledToHeight(CardUI.CARD_HEIGHT, mode=Qt.SmoothTransformation)
+        pixmap = pixmap.scaledToHeight(CardUI.CARD_HEIGHT, mode=Qt.TransformationMode.SmoothTransformation)
 
         # add pixmap to QLabel and fit QLabel to size of the pixmap
         self.setPixmap(pixmap)

@@ -34,23 +34,14 @@ class PlayerHandWidget(QWidget):
         self.stats_area.setFixedHeight(150)
         self.stats_area.setFixedWidth(180)
 
-        # ------> layout of DEALER info
-        # if the owner of this hand widget is an instance of Dealer
-        # set name tag accordingly
-        if isinstance(self.owner, Dealer):
-            name_tag = QLabel('Dealer')
-            self.vLayout.addWidget(name_tag)
+        #here create tags
+        self.name_tag = QLabel()
+        self.score_tag = QLabel()
+        self.best_tag = QLabel()
+        self.vLayout.addWidget(self.name_tag)
+        self.vLayout.addWidget(self.score_tag)
+        self.vLayout.addWidget(self.best_tag)
 
-        # ------> layout of PLAYER (USER) info
-        # else if the owner is an instance of Player, show name, score
-        # and highscore of the user
-        elif isinstance(self.owner, Player):
-            name_tag = QLabel(f'{self.owner_name}')
-            score_tag = QLabel("score: " + f'{self.owner.score}')
-            best_tag = QLabel("history best: " + f'{self.owner.best_score}')
-            self.vLayout.addWidget(name_tag)
-            self.vLayout.addWidget(score_tag)
-            self.vLayout.addWidget(best_tag)
 
         # Add stats area to layout
         self.hLayout.addWidget(self.stats_area)
@@ -59,4 +50,16 @@ class PlayerHandWidget(QWidget):
         self.card_widget = CardView()
         self.hLayout.addWidget(self.card_widget)
         self.setStyleSheet("border: 1px solid red; padding: 0px; margin: 0px;")
+    
+    #update display:
+    def update_player_info(self):
+        if isinstance(self.owner, Dealer):
+            self.name_tag.setText("Dealer")
+            self.score_tag.setText("")
+            self.best_tag.setText("")
+        elif isinstance(self.owner, Player):
+            self.name_tag.setText(self.owner.name)
+            self.score_tag.setText(f"score: {self.owner.score}")
+            self.best_tag.setText(f"history best: {self.owner.best_score}")
 
+      

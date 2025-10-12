@@ -17,10 +17,11 @@ class PlaceBet(QWidget):
     open_game_view_signal = Signal()
 
     # CONSTRUCTOR
-    def __init__(self, game):
+    def __init__(self):
         super().__init__()
 
-        self.game = game
+        #game to be passed in later
+        self.game = None
         # INSTANCE ATTRIBUTES
         # initialize  bet
         self._placed_bet = PlaceBet.DEFAULT_START_BET
@@ -187,6 +188,8 @@ class PlaceBet(QWidget):
         print("bet locked in, starting game...")
         print("(new balance saved in database)")
         self.game.bet = self.placed_bet
+        #back-end integration
+        self.game.place_bet()
 
         # emit signal for opening game view
         self.open_game_view_signal.emit()
@@ -201,7 +204,7 @@ if __name__ == "__main__":
     app = QApplication([])
 
     # create and show place-bet window
-    window = PlaceBet(game=None)
+    window = PlaceBet()
     window.show()
 
     # start event loop

@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
         self.pages.addWidget(self.login)
 
         # add place bet page
-        self.place_bet = PlaceBet(game=None)
+        self.place_bet = PlaceBet()
         self.pages.addWidget(self.place_bet)
 
         # add game view page
@@ -69,7 +69,7 @@ class MainWindow(QMainWindow):
         self.login.send_user_info_to_main_signal.connect(self.init_game_with_given_user)
 
         # connect lock in button on place bet page with game view
-        self.place_bet.open_game_view_signal.connect(self.open_game_view)
+        self.place_bet.open_game_view_signal.connect(self.switch_from_place_bet_to_game_ui)
         
         
 
@@ -85,6 +85,10 @@ class MainWindow(QMainWindow):
         self.place_bet.refresh_page()
         self.open_place_bet_view()
         
+    def switch_from_place_bet_to_game_ui(self):
+        self.game_ui.game = self.game
+        self.game_ui.update_game_info()
+        self.open_game_view()
         
 
 
