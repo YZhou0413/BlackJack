@@ -15,7 +15,7 @@ class CardView(QGraphicsView):
 
     # set horizontal gap between cards
     X_GAP = 5
-    X_OVERLAP = 30
+    X_OVERLAP = 30 #now the cards are slightly overlaping with each other, it just looks nicer
 
     def __init__(self):
         super().__init__()
@@ -35,9 +35,9 @@ class CardView(QGraphicsView):
         pass    
     
             
-    # adds a card to this cardview
-        
+    # adds a card to this cardview 
     def add_card_to_view(self, card, owner='user'):
+        #decide which proxy list to use
         proxy_list = self._dealer_proxies if owner == 'dealer' else self._user_proxies
         position_id = len(proxy_list)
 

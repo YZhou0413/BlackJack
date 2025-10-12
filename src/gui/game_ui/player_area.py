@@ -66,7 +66,7 @@ class PlayerHandWidget(QWidget):
             
     def grey_out(self):
         if not hasattr(self, "_overlay_widget"):
-        # create a QWidget covering the entire view
+        # create a QWidget covering the entire view, so that our user know that they cant draw anymore
             self._overlay_widget = QWidget(self)
             self._overlay_widget.setStyleSheet("background-color: rgba(0, 0, 0, 150);")
             self._overlay_widget.setGeometry(self.rect())  # match size of QGraphicsView

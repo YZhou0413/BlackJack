@@ -28,6 +28,7 @@ class GameTable(QWidget):
         # references to dummy player and dummy dealer for testing
         # todo: get references from game instance
         self._game = None
+        #TODO: we should somehow remove these dummy items, cuz they might cause unexpected bugs and just intialize with Nones
         self._player = dummy_player()
         self._dealer = dummy_dealer()
         self.player_bust_flag = False
@@ -73,7 +74,7 @@ class GameTable(QWidget):
         # set background color to casino table green
         self.setStyleSheet(" background-color: #0B7D0B ;padding: 0px; margin: 0px;")
         
-        
+    #property and setters
     @property
     def game(self):
         return self._game 
@@ -98,7 +99,9 @@ class GameTable(QWidget):
         if type(new_player) is Player:
             self._player = new_player
     
+    
     def update_game_info(self):
+        #this function pass in-game property and user objs to the game table ui, also bound the signals to functions
         self.dealer_area.owner = self.game.dealer
         self.player_area.owner = self.game.player
         
@@ -108,18 +111,15 @@ class GameTable(QWidget):
         self.render_initial_hands()
         
         self.game.dealer_start_turn.connect(self.dealer_turn_start)
-        self.game.dealer_drawn_card.connect(self.dealer_draw_new_card)
+        self.game.dealer_drawn_card.connect(self.render_after_dealer_draw_new_card)
         self.game.dealer_finished_turn.connect(self.dealer_finished)
         
-    # TODO:add ui elements for these
+    
     #deal with signals sent from game:
     def player_busted(self):
-        #have to disable and hide hit/stand btns 
-        #have to grey out player card widget
-        #have to update dealer card view
         self.player_bust_flag = True
-        pass
 
+    # TODO:add ui elements for winner, loser, push, and prompt for new round
     def display_endgame_ui(self):
         #check status of players, display end game ui
         #trigger new round dialog
@@ -154,30 +154,35 @@ class GameTable(QWidget):
 
         user_cards_view.initialize_user_hand(user_hand)
 
+    
     def stand(self):
+        #when stand is clicked, evolve from player turn to dealer turn
         self.player_area.grey_out()
         self.game.btn_stand_on_click()
         self.buttons_container.setVisible(False)
 
-    #TODO: render cards for dealer
-
+    
+    #dealer turn is now managed by the following funcs
     def dealer_turn_start(self):
-        # reveal dealer's hidden card first
+        # reveal dealer hidden card first
         self.dealer_area.card_widget.reveal_dealer_second_card()
         self.dealer_area.card_widget.viewport().update()
 
-        # start stepwise drawing
+        # start drawing
         self.dealer_timer = QTimer()
         self.dealer_timer.setInterval(500)  # 0.5s between cards
         self.dealer_timer.timeout.connect(self.game.dealer_draw)
         self.dealer_timer.start()
 
-    def dealer_draw_new_card(self):
+    #render after a new card is added to dealer hand
+    def render_after_dealer_draw_new_card(self):
         new_card = self.game.dealer.hand[-1]
         print("Dealer drew:", new_card.rank, new_card.suit)
         self.dealer_area.card_widget.add_card_to_view(new_card, owner='dealer')
         self.dealer_area.card_widget.viewport().update()
-
+        
+        
+    #moved the phase up to end game from game to ui
     def dealer_finished(self):
         self.dealer_area.grey_out()
         self.game.print_card(self.game.dealer)
