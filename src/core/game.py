@@ -147,7 +147,7 @@ class Game:
         
     '''------------------Player actions <phase 1>------------------'''   
 
-    def add_on_click(self):                                            #Hit --> draw_card() and if is_bust() --> dealer_draw()
+    def btn_hit_on_click(self):                                            #Hit --> draw_card() and if is_bust() --> dealer_draw()
         if self.phase != 1:
             return
         else:
@@ -164,7 +164,7 @@ class Game:
         print("\n")
 
         
-    def player_stands(self):                                            #Stand --> dealer_draw()
+    def btn_stand_on_click(self):                                            #Stand --> dealer_draw()
         self.phase_up() #phase 2 -> dealer
         self.print_card(self.player)
         self.dealer_draw()
@@ -205,8 +205,8 @@ class Game:
     
     def ai_plays(self):                                                 #AI Plays for Player if turned True --> player_stands()
         while self.calculate_hand(self.player) < 17:
-            self.add_on_click()
-        self.player_stands()
+            self.btn_hit_on_click()
+        self.btn_stand_on_click()
 
 
 

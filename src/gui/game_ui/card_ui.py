@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QLabel, QSizePolicy
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
+import os
 
 # gets the filename of the image fitting the specified card
 def get_path_from_card(card):
@@ -31,20 +32,20 @@ def get_path_from_card(card):
 
     # create filename from part strings
     if rank.isnumeric() or rank == "A":
-        filename = f"{rank_string}_of_{suit_string}.png"
+        filename = f"/{rank_string}_of_{suit_string}.png"
     else:
-        filename = f"{rank_string}_of_{suit_string}2.png"
+        filename = f"/{rank_string}_of_{suit_string}2.png"
 
     return filename
 
 
 # Represents a card ui instance
 class CardUI(QLabel):
-    PNG_PATH = "../PNG-cards/"
+    PNG_PATH = os.path.abspath("./src/gui/PNG-cards") #path was problematic, fixed
     # full path to front of image (missing part added in constructor)
     FRONT_PATH = ""
     # full path to back of card image
-    BACK_PATH = PNG_PATH + "back.png"
+    BACK_PATH = PNG_PATH + "/back.png"
     # height of card ui widget
     CARD_HEIGHT = 120
 
@@ -89,10 +90,11 @@ class CardUI(QLabel):
     # INSTANCE METHODS
     # sets pixmap of this widget
     def set_pixmap_from_path(self, img_path):
-        # creates pixmap from card image
+        if not os.path.exists(img_path):
+            print("File not found:", img_path)
         pixmap = QPixmap(img_path)
+        if pixmap.isNull():
+            print("Failed to load pixmap:", img_path)
         pixmap = pixmap.scaledToHeight(CardUI.CARD_HEIGHT, mode=Qt.TransformationMode.SmoothTransformation)
-
-        # add pixmap to QLabel and fit QLabel to size of the pixmap
         self.setPixmap(pixmap)
         self.resize(pixmap.size())

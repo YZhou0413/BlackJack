@@ -104,6 +104,8 @@ class GameTable(QWidget):
         self.dealer_area.update_player_info()
         self.player_area.update_player_info()
         
+        self.render_initial_hands()
+        
         
         
 
