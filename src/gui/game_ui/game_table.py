@@ -167,10 +167,11 @@ class GameTable(QWidget):
         # reveal dealer hidden card first
         self.dealer_area.card_widget.reveal_dealer_second_card()
         self.dealer_area.card_widget.viewport().update()
+        #maybe here to check first if the hand is bigger than user to decide continue draw or not
 
         # start drawing
         self.dealer_timer = QTimer()
-        self.dealer_timer.setInterval(500)  # 0.5s between cards
+        self.dealer_timer.setInterval(1000)  # 1s between cards
         self.dealer_timer.timeout.connect(self.game.dealer_draw)
         self.dealer_timer.start()
 
