@@ -8,6 +8,8 @@
 import sys
 
 sys.path.append("../")
+
+from PySide6.QtCore import Signal, QObject
 from src.core.player import Player, Dealer
 from src.core.cards import Card
 import random
@@ -18,9 +20,17 @@ dummy_player = Player("dummy")
 
 
 
-class Game:
+class Game(QObject):
+    bust_signal = Signal(object)
+    end_game_winner_signal = Signal(object) #send out winner, UI react by check player stats and update
+    end_game_push_signal = Signal() #update ui to display push
+    dealer_drawn_card = Signal() #dealer draw, add cards to ui until endgame triggered
+    dealer_finished_turn = Signal()
+    dealer_start_turn = Signal()
+    
     gamer_stat = ["START", "WIN", "LOST", "BUST", "PUSH", "in-game"]
     def __init__(self, user):
+        super().__init__()
         self.deck = self.create_deck()
         self.shuffle_deck()
         self.dealer = Dealer()
@@ -153,10 +163,12 @@ class Game:
         else:
             self.player.hand.append(self.draw_card())
             if self.is_bust(self.player):
-                self.phase_up()  #phase 2 -> Dealer
+                self.bust_signal.emit(self.player)
+                self.phase_up() 
+                self.dealer_start_turn.emit()#phase 2 -> Dealer
                 self.print_card(self.player)
-                self.dealer_draw() #reveal dealer card -> dealer actions
-                return
+                #self.dealer_draw() #reveal dealer card -> dealer actions (for better ui display, this is removed from here)
+                #return
         self.print_card(self.player)
         print(r'If you want to hit (pull another card) type "game.add_on_click()"')
         print(r'When you´re happy with your hand and want to end your turn type "game.player_stands()"')
@@ -166,32 +178,32 @@ class Game:
         
     def btn_stand_on_click(self):                                            #Stand --> dealer_draw()
         self.phase_up() #phase 2 -> dealer
+        self.dealer_start_turn.emit()
         self.print_card(self.player)
-        self.dealer_draw()
+        
+    
 
         
 
     
     '''------------------Phase 2 Dealer------------------'''
-
-    def dealer_draw(self):                                              #Dealer turn --> calc_winner()
-        if self.phase != 2:
+    #to integrate with UI, this has to be rewrite.
+    #TODO: after adapt to ui, now can't check if bigger than user, which is not good
+    
+    def dealer_draw(self):
+        if self.player.status == "BUST":
+            self.dealer_finished_turn.emit()
             return
+
+        if self.calculate_hand(self.dealer) < 19:
+            new_card = self.draw_card()
+            self.dealer.hand.append(new_card)
+            self.dealer_drawn_card.emit()
+            if self.is_bust(self.dealer):
+                self.update_status(self.dealer, "BUST")
+                self.dealer_finished_turn.emit()
         else:
-            if self.player.status == "BUST":
-                #reveal card
-                pass
-            else: #nicht busted, wait for dealer to finish
-                while self.calculate_hand(self.dealer) < 17: 
-                    self.dealer.hand.append(self.draw_card())
-                    if self.is_bust(self.dealer):
-                        self.update_status(self.dealer, "BUST")
-                    elif self.calculate_hand(self.player) <= self.calculate_hand(self.dealer):
-                        break
-                    
-            self.phase_up() # phase 3 -> calc score
-            self.print_card(self.dealer)
-            self.calc_winner()
+            self.dealer_finished_turn.emit()
 
 
 

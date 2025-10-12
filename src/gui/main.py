@@ -6,7 +6,7 @@
 # Software Assignment                #
 ######################################
 
-from PySide6.QtCore import QSize, Signal
+from PySide6.QtCore import QSize
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -21,6 +21,8 @@ from src.core.player import Player, Dealer
 from src.core.game import Game
 import src.core.login_panda as lgpd
 
+#linus password 12345
+#yoyo ABCDE%&/
 
 # Represents app window
 class MainWindow(QMainWindow):
@@ -71,16 +73,18 @@ class MainWindow(QMainWindow):
         # connect lock in button on place bet page with game view
         self.place_bet.open_game_view_signal.connect(self.switch_from_place_bet_to_game_ui)
         
-        
-
         # set menu as initial central widget of main window
         self.setCentralWidget(self.pages)
         
+        
+ 
+            
     def init_game_with_given_user(self, username):
         user_cur_score = lgpd.get_score(username)
         self.cur_player = Player(username)
         self.cur_player.score = user_cur_score
         self.game = Game(self.cur_player)
+        self.game.bust_signal.connect(self.on_player_bust)
         self.place_bet.game = self.game
         self.place_bet.refresh_page()
         self.open_place_bet_view()
@@ -105,6 +109,10 @@ class MainWindow(QMainWindow):
     def open_game_view(self):
         # start game
         self.pages.setCurrentWidget(self.game_ui)
+        
+    def on_player_bust(self):
+        self.game_ui.player_busted()
+        
 
 
 if __name__ == '__main__':

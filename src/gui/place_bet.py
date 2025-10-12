@@ -79,7 +79,7 @@ class PlaceBet(QWidget):
 
         user_balance_label = QLabel("Balance: ")
         self.user_balance_field = QLabel()
-        self.update_user_balance_field()
+        self.user_balance_field.setText(str(self._current_balance))
 
         # create layout for user info fields
         footer_layout = QGridLayout()
@@ -104,12 +104,11 @@ class PlaceBet(QWidget):
     def current_balance(self):
         return self._current_balance
 
-    # sets current user balance and updates ui field
     @current_balance.setter
     def current_balance(self, new_balance):
         self._current_balance = new_balance
-        # update balance display
-        self.update_user_balance_field()
+        self.user_balance_field.setText(str(self._current_balance))
+
 
     @property
     def placed_bet(self):
@@ -171,14 +170,11 @@ class PlaceBet(QWidget):
 
     # updates displayed user balance
     def update_user_balance_field(self):
-        self.user_balance_field.setText(str(self.current_balance))
-
-    # methods for fetching and displaying user data
-    def set_initial_user_balance(self):
         if self.game is not None:
             self.current_balance = self.game.player.score
-            self.update_user_balance_field()
 
+
+        
     def update_user_name(self):
         if self.game is not None:
             self.username = self.game.player.name

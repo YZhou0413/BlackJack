@@ -3,7 +3,9 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QLabel,
+    QWidget
 )
+from PySide6.QtCore import Qt
 from src.core.player import Player, Dealer
 from src.gui.game_ui.card_view import CardView
 
@@ -61,5 +63,19 @@ class PlayerHandWidget(QWidget):
             self.name_tag.setText(self.owner.name)
             self.score_tag.setText(f"score: {self.owner.score}")
             self.best_tag.setText(f"history best: {self.owner.best_score}")
+            
+    def grey_out(self):
+        if not hasattr(self, "_overlay_widget"):
+        # create a QWidget covering the entire view
+            self._overlay_widget = QWidget(self)
+            self._overlay_widget.setStyleSheet("background-color: rgba(0, 0, 0, 150);")
+            self._overlay_widget.setGeometry(self.rect())  # match size of QGraphicsView
+            self._overlay_widget.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, False)  # block in
+            self._overlay_widget.show()
+        else:
+            self._overlay_widget.show()
+
+        # force repaint
+        self._overlay_widget.update()
 
       
