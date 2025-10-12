@@ -44,15 +44,22 @@ class PlaceBet(QWidget):
         # create increase bet button
         self.increase_bet_button = QPushButton("+100$")
         self.increase_bet_button.clicked.connect(self.increase_bet)
+        # set property for styling
+        self.increase_bet_button.setProperty("role", "increase-button")
 
         # create decrease bet button
         self.decrease_bet_button = QPushButton("-100$")
         self.decrease_bet_button.setEnabled(False)
         self.decrease_bet_button.clicked.connect(self.decrease_bet)
+        # set property for styling
+        self.decrease_bet_button.setProperty("role", "decrease-button")
+
 
         # create lock in button
         lock_in_button = QPushButton("Lock in")
         lock_in_button.clicked.connect(self.lock_in_bet)
+        # set property for styling
+        lock_in_button.setProperty("role", "lock-in-button")
 
         # create flow container for bet buttons
         bet_buttons_layout = QHBoxLayout()
