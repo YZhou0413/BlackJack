@@ -6,16 +6,20 @@
 # Software Assignment                #
 ######################################
 
-from PySide6.QtCore import QSize
+from PySide6.QtCore import QSize, Signal
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
     QStackedWidget
 )
-from menu import Menu
+from src.gui.menu import Menu
 from src.gui.game_ui.game_table import GameTable
 from src.gui.login.login import Login
 from src.gui.place_bet import PlaceBet
+
+from src.core.player import Player, Dealer
+from src.core.game import Game
+import src.core.login_panda as lgpd
 
 
 # Represents app window
@@ -25,7 +29,6 @@ class MainWindow(QMainWindow):
     # fixed width and height of main window
     WINDOW_FIXED_WIDTH = 700
     WINDOW_FIXED_HEIGHT = int(WINDOW_FIXED_WIDTH * 0.66)
-
 
     # CONSTRUCTOR
     def __init__(self):
@@ -52,24 +55,37 @@ class MainWindow(QMainWindow):
         self.pages.addWidget(self.login)
 
         # add place bet page
-        self.place_bet = PlaceBet()
+        self.place_bet = PlaceBet(game=None)
         self.pages.addWidget(self.place_bet)
 
         # add game view page
-        self.game = GameTable()
-        self.pages.addWidget(self.game)
+        self.game_ui = GameTable()
+        self.pages.addWidget(self.game_ui)
 
         # connect login button in menu with login page
         menu.open_login_signal.connect(self.open_login_view)
 
         # connect signin button on login page with place bet view
-        self.login.open_place_bet_signal.connect(self.open_place_bet_view)
+        self.login.send_user_info_to_main_signal.connect(self.init_game_with_given_user)
 
         # connect lock in button on place bet page with game view
         self.place_bet.open_game_view_signal.connect(self.open_game_view)
+        
+        
 
         # set menu as initial central widget of main window
         self.setCentralWidget(self.pages)
+        
+    def init_game_with_given_user(self, username):
+        user_cur_score = lgpd.get_score(username)
+        self.cur_player = Player(username)
+        self.cur_player.score = user_cur_score
+        self.game = Game(self.cur_player)
+        self.place_bet.game = self.game
+        self.place_bet.refresh_page()
+        self.open_place_bet_view()
+        
+        
 
 
     # SIGNAL HANDLER METHODS
@@ -84,7 +100,7 @@ class MainWindow(QMainWindow):
     # sets place bet page as current page
     def open_game_view(self):
         # start game
-        self.pages.setCurrentWidget(self.game)
+        self.pages.setCurrentWidget(self.game_ui)
 
 
 if __name__ == '__main__':

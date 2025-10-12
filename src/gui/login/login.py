@@ -8,10 +8,12 @@ from PySide6.QtWidgets import (
     QTextEdit
 )
 from src.gui.login.login_approve_dialog import ApproveDialog
+import src.core.login_panda as lgpd 
 
 class Login(QWidget):
     # create signal for opening place bet view
-    open_place_bet_signal = Signal()
+    # open_place_bet_signal = Signal()
+    send_user_info_to_main_signal = Signal(object)
 
     # CONSTRUCTOR
     def __init__(self):
@@ -54,6 +56,10 @@ class Login(QWidget):
     # SIGNAL HANDLER METHODS
     # handles signin and account creation
     def validate_signin(self):
+        """
+        this part was a bit problematic, in my test, if password incorrect, user still got sent to place bet,
+        but irl we would want them to try again. modified.
+        """
         # save current form input
         username = self.username_input_field.text()
         password = self.password_input_field.text()
@@ -70,13 +76,25 @@ class Login(QWidget):
             print("password not valid")
             self.form_info.setText("password invalid")
             return None
+        
 
         #---- compare input with user base ----
         # if username is taken, check for matching credentials
         if Login.check_username_exists(username):
-                if not Login.check_correct_credentials(username, password):
-                    print("Username or password incorrect")
-                    self.form_info.setText("username or password incorrect")
+  
+            # username exists — check credentials
+            if not Login.check_correct_credentials(username, password):
+                print("Username or password incorrect")
+                self.form_info.setText("Incorrect password. Please try again.")
+                # return without continuing — user must re-enter password
+                return None
+            else:
+                # credentials correct → allow login
+                print("Login successful")
+                
+                self.send_user_info_to_main_signal.emit(username)
+                print("Load player data and open bet page")
+                return None
 
         # if username not yet taken, open modal for user approval of account creation
         else:
@@ -97,12 +115,9 @@ class Login(QWidget):
                 print("User has approved. Account creation triggered")
                 self.trigger_account_creation(username, password)
 
-        #---- grant access to game ----
-        # if credentials match or user approves account creation
-        # send signal for showing place bet page
-        self.open_place_bet_signal.emit()
-        print("Load player data and open bet page")
-        return None
+                self.send_user_info_to_main_signal.emit(username)
+                print("Load player data and open bet page")
+                return None
 
 
     # BACKEND COMMUNICATION METHODS
@@ -110,21 +125,20 @@ class Login(QWidget):
     @staticmethod
     def check_username_exists(username):
         print("Check if username exists in database")
-        # todo: connect with backend
-        return False
+        return lgpd.user_exists(username)
 
     # check if username and password match
     @staticmethod
     def check_correct_credentials(username, password):
         print("Checks if password is correct")
-        # todo: connect with backend
-        return False
+        
+        return lgpd.verify_user(username, password)
+
 
     # trigger account creation
     @staticmethod
     def trigger_account_creation(username, password):
-        # todo: connect with backend
-        pass
+        lgpd.create_user(username, password, start_score=1000)
 
     # HELPER METHODS
     # checks if username has valid format
@@ -144,6 +158,7 @@ class Login(QWidget):
         if len(password) < 5:
             return False
         return True
+
 
 
 if __name__ == "__main__":

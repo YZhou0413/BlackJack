@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout, QLabel, QGridLayout, QHBoxLayout, QApplication
 )
 
+from src.core.game import Game
 
 # Represents place bet page
 class PlaceBet(QWidget):
@@ -16,15 +17,16 @@ class PlaceBet(QWidget):
     open_game_view_signal = Signal()
 
     # CONSTRUCTOR
-    def __init__(self):
+    def __init__(self, game):
         super().__init__()
 
+        self.game = game
         # INSTANCE ATTRIBUTES
         # initialize  bet
         self._placed_bet = PlaceBet.DEFAULT_START_BET
         # name of logged in user
         # todo: fetch user data
-        self._username = "blackjackwinner2010"
+        self.username = "blackjackwinner2010"
         # current user balance
         # todo: fetch user data
         self._current_balance = 900
@@ -70,18 +72,18 @@ class PlaceBet(QWidget):
 
         #---- status elements of FOOTER ----
         # create user info fields
-        user_name_label = QLabel("User")
-        user_name_field = QLabel()
-        user_name_field.setText(self._username)
+        user_name_label = QLabel("Player: ")
+        self.user_name_field = QLabel()
+        self.user_name_field.setText(self._username)
 
-        user_balance_label = QLabel("Balance")
+        user_balance_label = QLabel("Balance: ")
         self.user_balance_field = QLabel()
         self.update_user_balance_field()
 
         # create layout for user info fields
         footer_layout = QGridLayout()
         footer_layout.addWidget(user_name_label, 0, 0)
-        footer_layout.addWidget(user_name_field, 0, 1)
+        footer_layout.addWidget(self.user_name_field, 0, 1)
         footer_layout.addWidget(user_balance_label, 1, 0)
         footer_layout.addWidget(self.user_balance_field, 1, 1)
 
@@ -117,6 +119,22 @@ class PlaceBet(QWidget):
     def placed_bet(self, new_bet):
         self._placed_bet = new_bet
         self.update_placed_bet_field()
+        
+    @property
+    def game(self):
+        return self._game 
+    @game.setter
+    def game(self, new_game):
+        if type(new_game) is Game:
+            self._game = new_game
+            
+    @property
+    def username(self):
+        return self._username
+    
+    @username.setter
+    def username(self, new_name):
+        self._username = new_name
 
 
     # INSTANCE METHODS
@@ -152,24 +170,30 @@ class PlaceBet(QWidget):
 
     # updates displayed user balance
     def update_user_balance_field(self):
-        self.user_balance_field.setText(str(self._current_balance))
+        self.user_balance_field.setText(str(self.current_balance))
 
     # methods for fetching and displaying user data
-    def set_initial_user_balance(self, balance):
-        # todo: fetch from backend
-        pass
+    def set_initial_user_balance(self):
+        if self.game is not None:
+            self.current_balance = self.game.player.score
+            self.update_user_balance_field()
 
-    def set_user_name(self, username):
-        # todo: fetch from backend
-        pass
+    def update_user_name(self):
+        if self.game is not None:
+            self.username = self.game.player.name
+            self.user_name_field.setText(self.username)
 
     def lock_in_bet(self):
         print("bet locked in, starting game...")
         print("(new balance saved in database)")
-        # todo: connect to backend
+        self.game.bet = self.placed_bet
 
         # emit signal for opening game view
         self.open_game_view_signal.emit()
+        
+    def refresh_page(self):
+        self.update_user_name()
+        self.update_user_balance_field()
 
 
 if __name__ == "__main__":
@@ -177,7 +201,7 @@ if __name__ == "__main__":
     app = QApplication([])
 
     # create and show place-bet window
-    window = PlaceBet()
+    window = PlaceBet(game=None)
     window.show()
 
     # start event loop
