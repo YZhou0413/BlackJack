@@ -12,7 +12,7 @@
   - If you 're busted, the dealer will just reveal his second card and claim the victory.
   - Otherwise, the dealer will start draw cards, until they decide to stand or they bust.
   ##### :spades: When nobody busted, who has won?
-  - who has a high sum of their hand has won :sunglasses:
+  - who has a higher sum of their hand has won :sunglasses:
   
 ### :video_game: How to play in our console?
 ##### Please do this in the root folder `python-winter-2526-sopro-group7` in your terminal:  
