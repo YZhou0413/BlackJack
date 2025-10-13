@@ -21,6 +21,8 @@ from src.core.player import Player, Dealer
 from src.core.game import Game
 import src.core.login_panda as lgpd
 
+from src.gui.scoreboard import Scoreboard
+
 #linus password 12345
 #yoyo ABCDE%&/
 
@@ -64,14 +66,20 @@ class MainWindow(QMainWindow):
         self.game_ui = GameTable()
         self.pages.addWidget(self.game_ui)
 
+        self.scoreboard = Scoreboard()
+        self.pages.addWidget(self.scoreboard)
+
         # connect login button in menu with login page
         menu.open_login_signal.connect(self.open_login_view)
+        menu.open_scoreboard_signal.connect(self.open_scoreboard_view)
 
         # connect signin button on login page with place bet view
         self.login.send_user_info_to_main_signal.connect(self.init_game_with_given_user)
 
         # connect lock in button on place bet page with game view
         self.place_bet.open_game_view_signal.connect(self.switch_from_place_bet_to_game_ui)
+
+        self.scoreboard.back_signal.connect(self.show_menu)
         
         # set menu as initial central widget of main window
         self.setCentralWidget(self.pages)
@@ -109,6 +117,14 @@ class MainWindow(QMainWindow):
     def open_game_view(self):
         # start game
         self.pages.setCurrentWidget(self.game_ui)
+
+    def show_menu(self):
+        """Zeige das Menü (erste Seite)."""
+        self.pages.setCurrentIndex(0)
+
+    def open_scoreboard_view(self):
+        self.scoreboard.load_scores()
+        self.pages.setCurrentWidget(self.scoreboard)
         
     def on_player_bust(self):
         self.game_ui.player_busted()

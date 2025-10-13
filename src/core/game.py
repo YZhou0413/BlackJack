@@ -187,15 +187,15 @@ class Game(QObject):
 
     
     '''------------------Phase 2 Dealer------------------'''
-    #to integrate with UI, this has to be rewrite.
-    #TODO: after adapt to ui, now can't check if bigger than user, which is not good
-    
+
     def dealer_draw(self):
         if self.player.status == "BUST":
             self.dealer_finished_turn.emit()
             return
 
-        if self.calculate_hand(self.dealer) < 19:
+        if self.calculate_hand(self.dealer) >= self.calculate_hand(self.player) and self.calculate_hand(self.dealer) > 11:
+            self.dealer_finished_turn.emit()
+        elif self.calculate_hand(self.dealer) < 17:
             new_card = self.draw_card()
             self.dealer.hand.append(new_card)
             self.dealer_drawn_card.emit()

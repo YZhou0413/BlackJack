@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
 class Menu(QWidget):
     # create signal for showing login page
     open_login_signal = Signal()
+    open_scoreboard_signal = Signal()
 
     # CONSTRUCTOR
     def __init__(self):
@@ -47,7 +48,7 @@ class Menu(QWidget):
         print("Rules button pressed")
 
     def open_scoreboard_view(self):
-        print("Scoreboard button pressed")
-
+        self.open_scoreboard_signal.emit()
+        
     def exit_game(self):
         print("Exit game button was pressed")
