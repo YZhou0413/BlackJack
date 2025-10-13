@@ -2,9 +2,9 @@ import sys
 import os
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QMainWindow, QApplication,
+    QLabel, QMainWindow, QApplication, QStyle,
 )
-from PySide6.QtCore import QSize, QTimer, Signal
+from PySide6.QtCore import QSize, QTimer, Signal, Qt
 from src.gui.game_ui.buttons_stack import ButtonsStack
 
 # Add src to sys.path if running from gui folder
@@ -49,10 +49,13 @@ class GameTable(QWidget):
 
         # status field
         self.status_info_field = QLabel("It's your turn!")
-        self.status_info_field.setFixedSize(QSize(300, 50))
+        self.status_info_field.setAlignment(Qt.AlignLeft)
+        self.status_info_field.setFixedSize(QSize(190, 50))
 
         # create widget for switch between action buttons and game end buttons
         self.button_stack = ButtonsStack()
+        # show border around widget rectangles for showing layout
+        # self.setStyleSheet("border: 1px solid red")
 
         # -- setup button slots
         # action buttons
@@ -127,14 +130,14 @@ class GameTable(QWidget):
         match self.game.player.status:
             case "WIN":
                 message = "Dealer's Bust" if dealer_busted else "Your hand is higher"
-                message += " - You win, Congrats!"
+                message += "\n\nYou win, Congrats!"
                 self.dealer_area.grey_out()
             case "LOST":
                 message = "Bust" if player_busted else "Dealer's hand is higher"
-                message += " - You lose!"
+                message += "\n\nYou lose!"
                 self.player_area.grey_out()
             case "PUSH":
-                message = "Push - You've regained your bet :)"
+                message = "Push\n\nYou've regained your bet :)"
             case _:
                 message = "Something went wrong.\nPlease consult the Dev Team"
         # update game status message
@@ -177,7 +180,7 @@ class GameTable(QWidget):
         self.game.btn_stand_on_click()
         self.button_stack.disable_action_buttons()
         # display status message
-        self.status_info_field.setText("You stand - Dealer's turn")
+        self.status_info_field.setText("You stand\n\nDealer's turn")
         # start dealers turn
         self.dealer_turn_start()
 
@@ -235,9 +238,8 @@ class GameTable(QWidget):
     def on_new_game(self):
         # todo: connect to backend (reset game instance)
 
-        # switch back to player action buttons
-        self.button_stack.show_action_buttons()
-        self.button_stack.enable_action_buttons()
+        # reset buttons and status message
+        self.reset_ui()
 
         # show place bet page like after sign in
         print("player name on new game", self._player.name)
@@ -250,13 +252,20 @@ class GameTable(QWidget):
         # fire open menu signal
         self.exit_to_menu_signal.emit()
 
-        # switch back to player action buttons
-        self.button_stack.show_action_buttons()
-        self.button_stack.enable_action_buttons()
+        # reset buttons and status message
+        self.reset_ui()
 
         # show menu
         # todo: show logout button instead of sign in button
         #  or logout player when returning to menu?
+
+    def reset_ui(self):
+        # switch back to player action buttons
+        self.button_stack.show_action_buttons()
+        self.button_stack.enable_action_buttons()
+
+        # switch back to initial status message
+        self.status_info_field.setText("It's your turn!")
 
 
 if __name__ == "__main__":
