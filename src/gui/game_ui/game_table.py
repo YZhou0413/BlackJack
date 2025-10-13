@@ -2,9 +2,10 @@ import sys
 import os
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QMainWindow, QApplication, QPushButton,
+    QLabel, QMainWindow, QApplication,
 )
-from PySide6.QtCore import Qt, QSize, QTimer
+from PySide6.QtCore import QSize, QTimer
+from src.gui.game_ui.buttons_stack import ButtonsStack
 
 # Add src to sys.path if running from gui folder
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -42,26 +43,22 @@ class GameTable(QWidget):
         self.controls.setMaximumHeight(170)
 
         # status field
-        self.status_info_field = QLabel("Good Luck!")
+        self.status_info_field = QLabel("It's your turn!")
         self.status_info_field.setFixedSize(QSize(300, 50))
 
-        # setup player action buttons
-        hit_button = QPushButton("Hit")
-        hit_button.clicked.connect(self.player_draw_card_use_hit)
-        stand_button = QPushButton("Stand")
-        stand_button.clicked.connect(self.stand)
+        # create widget for switch between action buttons and game end buttons
+        self.button_stack = ButtonsStack()
 
-        # setup buttons container layout
-        self.buttons_container = QWidget()
-        buttons_layout = QHBoxLayout(self.buttons_container)
-        buttons_layout.addWidget(hit_button)
-        buttons_layout.addWidget(stand_button)
-        buttons_layout.setAlignment(self.buttons_container, Qt.AlignmentFlag.AlignHCenter)
+        # setup button slots
+        self.button_stack.hit_button.clicked.connect(self.player_draw_card_use_hit)
+        self.button_stack.stand_button.clicked.connect(self.stand)
+        self.button_stack.new_game_button.clicked.connect(self.on_new_game)
+        self.button_stack.exit_to_menu_button.clicked.connect(self.on_exit_to_menu)
 
         # setup layout for controls widget
         controls_layout = QHBoxLayout()
         controls_layout.addWidget(self.status_info_field)
-        controls_layout.addWidget(self.buttons_container)
+        controls_layout.addWidget(self.button_stack)
         self.controls.setLayout(controls_layout)
 
         # ---- setup gametable layout ----
@@ -110,7 +107,7 @@ class GameTable(QWidget):
         self.game.dealer_finished_turn.connect(self.dealer_finished)
         self.game.card_reveal_signal.connect(self.reveal_dealer_card)
 
-    # TODO:add ui elements for winner, loser, push, and prompt for new round
+    # display winner and post game buttons
     def display_endgame_ui(self):
         #check status of players, display end game ui
 
@@ -132,9 +129,11 @@ class GameTable(QWidget):
                 message = "Push - You've regained your bet :)"
             case _:
                 message = "Something went wrong.\nPlease consult the Dev Team"
+        # update game status message
         self.status_info_field.setText(message)
 
-        # todo: trigger new round dialog
+        # display post game buttons for starting a new game or returning to menu
+        self.button_stack.show_end_buttons()
 
     
     # INSTANCE METHODS
@@ -148,7 +147,7 @@ class GameTable(QWidget):
         # if player busted, grey out the entire hand
         if self.game.player_is_busted: #bust actions
             self.player_area.grey_out()
-            self.buttons_container.setVisible(False)
+            self.button_stack.disable_action_buttons()
 
     # renders initial hands of dealer and user
     def render_initial_hands(self):
@@ -168,7 +167,7 @@ class GameTable(QWidget):
     def stand(self):
         #when stand is clicked, evolve from player turn to dealer turn
         self.game.btn_stand_on_click()
-        self.buttons_container.setVisible(False)
+        self.button_stack.disable_action_buttons()
         # display status message
         self.status_info_field.setText("You stand - Dealer's turn")
         # start dealers turn
@@ -181,7 +180,7 @@ class GameTable(QWidget):
         if self.game.calculate_hand(self.game.dealer) >= self.game.calculate_hand(self.game.player) \
             and self.game.calculate_hand(self.game.dealer) >= 17:
                 self.dealer_finished()
-            
+
 
         # start drawing
         self.dealer_timer = QTimer()
@@ -208,10 +207,28 @@ class GameTable(QWidget):
         # display result
         self.display_endgame_ui()
 
-
     # shorthand function for calling CardView method
     def reveal_dealer_card(self):
         self.dealer_area.card_widget.reveal_dealer_second_card()
+
+    #---- game end methods ----
+
+    def on_new_game(self):
+        # todo: connect to backend (reset game)
+
+        # show place bet page like after sign in
+
+        # switch back to player action buttons
+        self.button_stack.show_action_buttons()
+        self.button_stack.enable_action_buttons()
+
+    def on_exit_to_menu(self):
+        # switch back to player action buttons
+        self.button_stack.show_action_buttons()
+        self.button_stack.enable_action_buttons()
+        # show menu
+        # todo: show logout button instead of sign in button
+        #  or logout player when returning to menu?
 
 
 if __name__ == "__main__":
