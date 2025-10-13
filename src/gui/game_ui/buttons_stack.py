@@ -10,13 +10,18 @@ class ButtonsStack(QStackedWidget):
         # create player action buttons
         self.hit_button = QPushButton("Hit")
         self.stand_button = QPushButton("Stand")
+        self.ai_button = QPushButton("AI")
 
         # setup action buttons container layout
         self.action_buttons_container = QWidget()
         self.action_buttons_layout = QHBoxLayout()
+
         self.action_buttons_layout.addWidget(self.hit_button)
         self.action_buttons_layout.addWidget(self.stand_button)
+        self.action_buttons_layout.addWidget(self.ai_button)
+
         self.action_buttons_container.setLayout(self.action_buttons_layout)
+
 
         #---- end game buttons ----
         # create post game buttons
@@ -40,11 +45,13 @@ class ButtonsStack(QStackedWidget):
     def disable_action_buttons(self):
         self.hit_button.setEnabled(False)
         self.stand_button.setEnabled(False)
+        self.ai_button.setEnabled(False)
 
     # enables hit and stand button
     def enable_action_buttons(self):
         self.hit_button.setEnabled(True)
         self.stand_button.setEnabled(True)
+        self.ai_button.setEnabled(True)
 
     # show player action buttons (hit, stand)
     def show_action_buttons(self):

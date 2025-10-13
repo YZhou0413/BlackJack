@@ -49,9 +49,12 @@ class GameTable(QWidget):
         # create widget for switch between action buttons and game end buttons
         self.button_stack = ButtonsStack()
 
-        # setup button slots
+        # -- setup button slots
+        # action buttons
         self.button_stack.hit_button.clicked.connect(self.player_draw_card_use_hit)
         self.button_stack.stand_button.clicked.connect(self.stand)
+        self.button_stack.ai_button.clicked.connect(self.on_ai_clicked)
+        # post game buttons
         self.button_stack.new_game_button.clicked.connect(self.on_new_game)
         self.button_stack.exit_to_menu_button.clicked.connect(self.on_exit_to_menu)
 
@@ -210,6 +213,17 @@ class GameTable(QWidget):
     # shorthand function for calling CardView method
     def reveal_dealer_card(self):
         self.dealer_area.card_widget.reveal_dealer_second_card()
+
+
+    # activate ai driven player
+    def on_ai_clicked(self):
+        # todo: connect to backend (let ai play)
+
+        # update status message
+        self.status_info_field.setText("AI is playing for you now!")
+        # disable action buttons
+        self.button_stack.disable_action_buttons()
+        pass
 
     #---- game end methods ----
 
