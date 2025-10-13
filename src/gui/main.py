@@ -81,8 +81,10 @@ class MainWindow(QMainWindow):
             
     def init_game_with_given_user(self, username):
         user_cur_score = lgpd.get_score(username)
+        user_best = lgpd.get_best_core(username)
         self.cur_player = Player(username)
         self.cur_player.score = user_cur_score
+        self.cur_player.best_score = user_best
         self.game = Game(self.cur_player)
         self.place_bet.game = self.game
         self.place_bet.refresh_page()

@@ -13,7 +13,7 @@ from src.core.game import Game
 from src.core.cards import Card
 from src.core.player import Player, Dealer
 from src.gui.game_ui.player_area import PlayerHandWidget
-from src.gui.game_ui.test_dummys import dummy_player, dummy_dealer, dummy_deck
+from src.gui.game_ui.test_dummys import dummy_player, dummy_dealer
 
 # Represents game page
 class GameTable(QWidget):
@@ -43,7 +43,7 @@ class GameTable(QWidget):
 
         # status field
         self.status_info_field = QLabel("Good Luck!")
-        self.status_info_field.setFixedSize(QSize(200, 50))
+        self.status_info_field.setFixedSize(QSize(300, 50))
 
         # setup player action buttons
         hit_button = QPushButton("Hit")
@@ -142,7 +142,6 @@ class GameTable(QWidget):
     def player_draw_card_use_hit(self):
         self.game.btn_hit_on_click()
         new_card = self.game.player.hand[-1]
-        print("Player drew:", new_card.rank, new_card.suit)
         # add to player hand UI
         self.player_area.card_widget.add_card_to_view(new_card, owner="user")
 
@@ -179,6 +178,10 @@ class GameTable(QWidget):
     #dealer turn is now managed by the following funcs
     def dealer_turn_start(self):
         #maybe here to check first if the hand is bigger than user to decide continue draw or not
+        if self.game.calculate_hand(self.game.dealer) >= self.game.calculate_hand(self.game.player) \
+            and self.game.calculate_hand(self.game.dealer) >= 17:
+                self.dealer_finished()
+            
 
         # start drawing
         self.dealer_timer = QTimer()
