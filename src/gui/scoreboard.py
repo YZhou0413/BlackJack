@@ -26,10 +26,11 @@ class Scoreboard(QWidget):
         self.table_top.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_top.setSelectionMode(QAbstractItemView.SingleSelection)
         self.table_top.setSortingEnabled(True)
+        self.table_top.setStyleSheet("background-color: #f5f0dc;")
 
         shame_label = QLabel("Hall of Shame")
         shame_label.setAlignment(Qt.AlignCenter)
-        shame_label.setStyleSheet("font-weight: bold; font-size: 14px; color: #a00;")
+        shame_label.setStyleSheet("font-weight: bold; font-size: 18px;")
 
         self.table_shame = QTableWidget(0, 3)
         self.table_shame.setHorizontalHeaderLabels(["Username", "Score", "Best Score"])
@@ -38,6 +39,8 @@ class Scoreboard(QWidget):
         self.table_shame.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_shame.setSelectionMode(QAbstractItemView.SingleSelection)
         self.table_shame.setSortingEnabled(True)
+        self.table_shame.setStyleSheet("background-color: #f5f0dc;")
+
 
         back_btn = QPushButton("Back")
         back_btn.clicked.connect(lambda: self.back_signal.emit())
@@ -75,8 +78,6 @@ class Scoreboard(QWidget):
         df_shame = df[df["score"] == 0].sort_values("username", ascending=True)
         for _, row in df_shame.reset_index(drop=True).iterrows():
             self._append_row(self.table_shame, str(row["username"]), "0", str(int(row["best_score"])))
-        if self.table_shame.rowCount() == 0:
-            self._append_row(self.table_shame, "No zero-score players", "0", "0")
 
         self.table_top.setSortingEnabled(True)
         self.table_top.sortItems(1, Qt.DescendingOrder)

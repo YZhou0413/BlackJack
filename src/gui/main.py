@@ -70,8 +70,8 @@ class MainWindow(QMainWindow):
         self.pages.addWidget(self.scoreboard)
 
         # connect login button in menu with login page
-        menu.open_login_signal.connect(self.open_login_view)
-        menu.open_scoreboard_signal.connect(self.open_scoreboard_view)
+        self.menu.open_login_signal.connect(self.open_login_view)
+        self.menu.open_scoreboard_signal.connect(self.open_scoreboard_view)
         self.menu.open_login_signal.connect(self.open_login_view)
 
         # connect signin button on login page with place bet view
