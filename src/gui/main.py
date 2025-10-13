@@ -84,7 +84,6 @@ class MainWindow(QMainWindow):
         self.cur_player = Player(username)
         self.cur_player.score = user_cur_score
         self.game = Game(self.cur_player)
-        self.game.bust_signal.connect(self.on_player_bust)
         self.place_bet.game = self.game
         self.place_bet.refresh_page()
         self.open_place_bet_view()
@@ -109,9 +108,6 @@ class MainWindow(QMainWindow):
     def open_game_view(self):
         # start game
         self.pages.setCurrentWidget(self.game_ui)
-        
-    def on_player_bust(self):
-        self.game_ui.player_busted()
         
 
 

@@ -31,7 +31,6 @@ class GameTable(QWidget):
         #TODO: we should somehow remove these dummy items, cuz they might cause unexpected bugs and just intialize with Nones
         self._player = dummy_player()
         self._dealer = dummy_dealer()
-        self.player_bust_flag = False
 
         # Dealer and player hands
         self.dealer_area = PlayerHandWidget(self.dealer)
@@ -71,9 +70,6 @@ class GameTable(QWidget):
         self.vLayout.addWidget(self.controls)
         self.vLayout.addWidget(self.player_area)
 
-        # set background color to casino table green
-        self.setStyleSheet(" background-color: #0B7D0B ;padding: 0px; margin: 0px;")
-        
     #property and setters
     @property
     def game(self):
@@ -109,22 +105,37 @@ class GameTable(QWidget):
         self.player_area.update_player_info()
         
         self.render_initial_hands()
-        
-        self.game.dealer_start_turn.connect(self.dealer_turn_start)
+
         self.game.dealer_drawn_card.connect(self.render_after_dealer_draw_new_card)
         self.game.dealer_finished_turn.connect(self.dealer_finished)
-        
-    
-    #deal with signals sent from game:
-    def player_busted(self):
-        self.player_bust_flag = True
+        self.game.card_reveal_signal.connect(self.reveal_dealer_card)
 
     # TODO:add ui elements for winner, loser, push, and prompt for new round
     def display_endgame_ui(self):
         #check status of players, display end game ui
-        #trigger new round dialog
-        pass
-    
+
+        # get player status and display winner message in status info
+        # also grey out loser's gametable area
+        dealer_busted = self.game.dealer_is_busted
+        player_busted = self.game.player_is_busted
+
+        match self.game.player.status:
+            case "WIN":
+                message = "Dealer's Bust" if dealer_busted else "Your hand is higher"
+                message += " - You win, Congrats!"
+                self.dealer_area.grey_out()
+            case "LOST":
+                message = "Bust" if player_busted else "Dealer's hand is higher"
+                message += " - You lose!"
+                self.player_area.grey_out()
+            case "PUSH":
+                message = "Push - You've regained your bet :)"
+            case _:
+                message = "Something went wrong.\nPlease consult the Dev Team"
+        self.status_info_field.setText(message)
+
+        # todo: trigger new round dialog
+
     
     # INSTANCE METHODS
     # let user draw card and display card in the gui
@@ -136,7 +147,7 @@ class GameTable(QWidget):
         self.player_area.card_widget.add_card_to_view(new_card, owner="user")
 
         # if player busted, grey out the entire hand
-        if self.player_bust_flag: #bust actions
+        if self.game.player_is_busted: #bust actions
             self.player_area.grey_out()
             self.buttons_container.setVisible(False)
 
@@ -157,16 +168,16 @@ class GameTable(QWidget):
     
     def stand(self):
         #when stand is clicked, evolve from player turn to dealer turn
-        self.player_area.grey_out()
         self.game.btn_stand_on_click()
         self.buttons_container.setVisible(False)
+        # display status message
+        self.status_info_field.setText("You stand - Dealer's turn")
+        # start dealers turn
+        self.dealer_turn_start()
 
     
     #dealer turn is now managed by the following funcs
     def dealer_turn_start(self):
-        # reveal dealer hidden card first
-        self.dealer_area.card_widget.reveal_dealer_second_card()
-        self.dealer_area.card_widget.viewport().update()
         #maybe here to check first if the hand is bigger than user to decide continue draw or not
 
         # start drawing
@@ -181,17 +192,23 @@ class GameTable(QWidget):
         print("Dealer drew:", new_card.rank, new_card.suit)
         self.dealer_area.card_widget.add_card_to_view(new_card, owner='dealer')
         self.dealer_area.card_widget.viewport().update()
-        
-        
+
     #moved the phase up to end game from game to ui
     def dealer_finished(self):
-        self.dealer_area.grey_out()
         self.game.print_card(self.game.dealer)
         if hasattr(self, 'dealer_timer'):
             self.dealer_timer.stop()
             self.dealer_timer.deleteLater()
-        self.game.phase_up()
+
+        # trigger game result
         self.game.calc_winner()
+        # display result
+        self.display_endgame_ui()
+
+
+    # shorthand function for calling CardView method
+    def reveal_dealer_card(self):
+        self.dealer_area.card_widget.reveal_dealer_second_card()
 
 
 if __name__ == "__main__":
