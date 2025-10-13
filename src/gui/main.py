@@ -49,8 +49,8 @@ class MainWindow(QMainWindow):
         self.pages = QStackedWidget()
 
         # add menu page
-        menu = Menu()
-        self.pages.addWidget(menu)
+        self.menu = Menu()
+        self.pages.addWidget(self.menu)
 
         # add login page
         self.login = Login()
@@ -65,14 +65,20 @@ class MainWindow(QMainWindow):
         self.pages.addWidget(self.game_ui)
 
         # connect login button in menu with login page
-        menu.open_login_signal.connect(self.open_login_view)
+        self.menu.open_login_signal.connect(self.open_login_view)
 
         # connect signin button on login page with place bet view
         self.login.send_user_info_to_main_signal.connect(self.init_game_with_given_user)
 
+        # connect new game button post game with place bet view
+        self.game_ui.new_game_signal.connect(self.init_game_with_given_user)
+
         # connect lock in button on place bet page with game view
         self.place_bet.open_game_view_signal.connect(self.switch_from_place_bet_to_game_ui)
-        
+
+        # connect exit to menu event to opening menu method
+        self.game_ui.exit_to_menu_signal.connect(self.open_menu_after_game)
+
         # set menu as initial central widget of main window
         self.setCentralWidget(self.pages)
         
@@ -110,7 +116,10 @@ class MainWindow(QMainWindow):
     def open_game_view(self):
         # start game
         self.pages.setCurrentWidget(self.game_ui)
-        
+
+    # sets menu as current page (post game)
+    def open_menu_after_game(self):
+        self.pages.setCurrentWidget(self.menu)
 
 
 if __name__ == '__main__':

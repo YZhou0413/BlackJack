@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QMainWindow, QApplication,
 )
-from PySide6.QtCore import QSize, QTimer
+from PySide6.QtCore import QSize, QTimer, Signal
 from src.gui.game_ui.buttons_stack import ButtonsStack
 
 # Add src to sys.path if running from gui folder
@@ -20,6 +20,11 @@ from src.gui.game_ui.test_dummys import dummy_player, dummy_dealer
 class GameTable(QWidget):
     WINDOW_FIXED_WIDTH = 700
     WINDOW_FIXED_HEIGHT = 490
+
+    # create signal for returning to menu after game
+    exit_to_menu_signal = Signal()
+    # create signal for starting new game
+    new_game_signal = Signal(object)
 
     # CONSTRUCTOR
     def __init__(self):
@@ -228,18 +233,27 @@ class GameTable(QWidget):
     #---- game end methods ----
 
     def on_new_game(self):
-        # todo: connect to backend (reset game)
+        # todo: connect to backend (reset game instance)
+
+        # switch back to player action buttons
+        self.button_stack.show_action_buttons()
+        self.button_stack.enable_action_buttons()
 
         # show place bet page like after sign in
+        print("player name on new game", self._player.name)
+        # todo fixbug: "Tester" is returned but should be
+        #  name of logged in user
+        # self.new_game_signal.emit(self._player.name)
 
-        # switch back to player action buttons
-        self.button_stack.show_action_buttons()
-        self.button_stack.enable_action_buttons()
 
     def on_exit_to_menu(self):
+        # fire open menu signal
+        self.exit_to_menu_signal.emit()
+
         # switch back to player action buttons
         self.button_stack.show_action_buttons()
         self.button_stack.enable_action_buttons()
+
         # show menu
         # todo: show logout button instead of sign in button
         #  or logout player when returning to menu?
