@@ -86,7 +86,7 @@ class PlaceBet(QWidget):
 
         user_balance_label = QLabel("Balance: ")
         self.user_balance_field = QLabel()
-        self.user_balance_field.setText(str(self._current_balance))
+        self.user_balance_field.setText(str(self._current_balance - 100))
 
         # create layout for user info fields
         footer_layout = QGridLayout()
@@ -178,7 +178,7 @@ class PlaceBet(QWidget):
     # updates displayed user balance
     def update_user_balance_field(self):
         if self.game is not None:
-            self.current_balance = self.game.player.score
+            self.current_balance = self.game.player.score - 100
 
 
         
