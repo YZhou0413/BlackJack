@@ -32,6 +32,7 @@ class Login(QWidget):
 
         # create password input field
         self.password_input_field = QLineEdit()
+        self.password_input_field.setEchoMode(QLineEdit.EchoMode.Password)
         self.password_input_field.setPlaceholderText("password")
 
         # create signin button

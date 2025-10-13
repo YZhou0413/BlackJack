@@ -14,20 +14,16 @@ from src.core.player import Player, Dealer
 from src.core.cards import Card
 import random
 import src.core.login_panda as login_panda
-from pprint import pprint
 
 dummy_player = Player("dummy")
 
 
 
 class Game(QObject):
-    bust_signal = Signal(object)
-    end_game_winner_signal = Signal(object) #send out winner, UI react by check player stats and update
-    end_game_push_signal = Signal() #update ui to display push
     dealer_drawn_card = Signal() #dealer draw, add cards to ui until endgame triggered
     dealer_finished_turn = Signal()
-    dealer_start_turn = Signal()
-    
+    card_reveal_signal = Signal()
+
     gamer_stat = ["START", "WIN", "LOST", "BUST", "PUSH", "in-game"]
     def __init__(self, user):
         super().__init__()
@@ -36,14 +32,34 @@ class Game(QObject):
         self.dealer = Dealer()
         self.dealer.hand = []
         self.dealer.status = "START"
+        self._dealer_is_busted = False
         self.player = user #make sure is a player obj
         self.player.hand = []
         self.player.status = "START"
+        self._player_is_busted = False
         self.bet = 100
         self.ai_play = False
         self.phase = 0
         self.initialize_game()
 
+    # property methods for player and dealer busted
+    @property
+    def player_is_busted(self):
+        return self._player_is_busted
+
+    @player_is_busted.setter
+    def player_is_busted(self, new_busted_state):
+        # only trigger side effects if changing from False to True
+        if not self._player_is_busted and new_busted_state:
+            # fire dealer card reveal signal
+            self.card_reveal_signal.emit()
+
+        # update player busted state
+        self._player_is_busted = new_busted_state
+
+    @property
+    def dealer_is_busted(self):
+        return self._dealer_is_busted
 
     '''------------------Print Card------------------'''
 
@@ -160,15 +176,24 @@ class Game(QObject):
     def btn_hit_on_click(self):                                            #Hit --> draw_card() and if is_bust() --> dealer_draw()
         if self.phase != 1:
             return
-        else:
-            self.player.hand.append(self.draw_card())
-            if self.is_bust(self.player):
-                self.bust_signal.emit(self.player)
-                self.phase_up() 
-                self.dealer_start_turn.emit()#phase 2 -> Dealer
-                self.print_card(self.player)
-                #self.dealer_draw() #reveal dealer card -> dealer actions (for better ui display, this is removed from here)
-                #return
+
+        # add new card to user's hand
+        self.player.hand.append(self.draw_card())
+
+        # if user busts...
+        if self.is_bust(self.player):
+            # ...update player bust state (triggers signal emit in setter)
+            self.player_is_busted = True
+            self.phase_up()
+
+            # fire finished turn of dealer and increment game phase
+            self.dealer_finished_turn.emit()
+            self.phase_up()
+
+            self.print_card(self.player)
+            #self.dealer_draw() #reveal dealer card -> dealer actions (for better ui display, this is removed from here)
+            #return
+
         self.print_card(self.player)
         print(r'If you want to hit (pull another card) type "game.add_on_click()"')
         print(r'When you´re happy with your hand and want to end your turn type "game.player_stands()"')
@@ -177,8 +202,12 @@ class Game(QObject):
 
         
     def btn_stand_on_click(self):                                            #Stand --> dealer_draw()
+        # trigger dealer card reveal
+        self.card_reveal_signal.emit()
+
         self.phase_up() #phase 2 -> dealer
-        self.dealer_start_turn.emit()
+        # removed dealer_start_turn.emit(), because dealer_turn_start
+        # in gametable class can be called directly inside of stand()
         self.print_card(self.player)
         
     
@@ -201,6 +230,7 @@ class Game(QObject):
             self.dealer_drawn_card.emit()
             if self.is_bust(self.dealer):
                 self.update_status(self.dealer, "BUST")
+                self._dealer_is_busted = True
                 self.dealer_finished_turn.emit()
         else:
             self.dealer_finished_turn.emit()
@@ -285,7 +315,7 @@ class Game(QObject):
             print("\n")
 
             return
-        
+
         if p_total == d_total:                                          #PUSH
             self.update_status(self.player, "PUSH")
             self.update_status(self.dealer, "PUSH")

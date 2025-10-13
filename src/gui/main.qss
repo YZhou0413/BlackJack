@@ -1,0 +1,119 @@
+/*
+ * main - Qt Style Sheet
+ * Created: 12.10.25
+ */
+
+/* Base styling */
+
+/* main window styling */
+QMainWindow {
+    background-color: #1d5b06;
+}
+
+/* standard button styling */
+QPushButton {
+    background-color: #1b4516;
+    padding: 8px;
+    border-radius: 6px;
+
+    /* button text style */
+    font-size: 20px;
+    color: #ffe24c;
+}
+
+QPushButton::hover {
+    background-color: #2e9522;
+}
+
+QPushButton::disabled {
+    background-color: #9c9c8c;
+    color: #706b4d;
+}
+
+/* default paragraphs styling */
+QTextEdit {
+    background-color: transparent;
+    color: #aeb409;
+    border: none;
+}
+
+/* default label styling */
+QLabel {
+    color: #d3da13;
+}
+
+/* default input field styling */
+QLineEdit {
+    background-color: #1b4516;
+    color: #ffe24c;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+QLineEdit::focus {
+    border: 1px solid #9cb01c
+}
+
+/* default dialog styling */
+QDialog {
+    background-color: #2a6223;
+}
+
+/* ---- page specific styling ---- */
+
+/* Menu styling */
+/* -> login button */
+QPushButton[role="login-button"] {
+    border: 1px solid #9cb01c;
+}
+
+QPushButton[role="login-button"]::hover {
+    background-color: #ffe43a;
+    color: #552510;
+    border: None;
+}
+
+/* -> exit button */
+QPushButton[role="exit-button"]::hover {
+    background-color: #d6440f;
+}
+
+/* Login styling */
+Login QPushButton {
+    background-color: #ffe43a;
+    color: #552510;
+}
+
+Login QPushButton::hover {
+    background-color: #FFE858;
+}
+
+/* Place Bet Page styling */
+/* -> increase button */
+QPushButton[role="increase-button"]::enabled {
+    border: 1px solid #33d80a;
+}
+
+QPushButton[role="increase-button"]::hover {
+    background-color: #3ca721;
+}
+
+/* -> decrease button */
+QPushButton[role="decrease-button"]::enabled {
+    border: 1px solid #b91515;
+}
+
+QPushButton[role="decrease-button"]::hover {
+    background-color: #72200c;
+}
+
+/* -> lock in button */
+QPushButton[role="lock-in-button"] {
+    border: 1px solid #000;
+}
+
+QPushButton[role="lock-in-button"]::hover {
+    border: 1px solid #9cb01c;
+}
+
+

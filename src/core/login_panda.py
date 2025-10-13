@@ -48,6 +48,12 @@ def get_score(username):
     val = rows.iloc[0]['score']
     return int(val)
 
+def get_best_core(username):
+    df = load_df()
+    rows = df.loc[df['username'].astype(str) == str(username)]
+    val = rows.iloc[0]['best_score']
+    return int(val)
+
 def set_score(username, score):
     df = load_df()
     mask = df['username'].astype(str) == str(username)

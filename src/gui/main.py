@@ -51,8 +51,8 @@ class MainWindow(QMainWindow):
         self.pages = QStackedWidget()
 
         # add menu page
-        menu = Menu()
-        self.pages.addWidget(menu)
+        self.menu = Menu()
+        self.pages.addWidget(self.menu)
 
         # add login page
         self.login = Login()
@@ -72,15 +72,22 @@ class MainWindow(QMainWindow):
         # connect login button in menu with login page
         menu.open_login_signal.connect(self.open_login_view)
         menu.open_scoreboard_signal.connect(self.open_scoreboard_view)
+        self.menu.open_login_signal.connect(self.open_login_view)
 
         # connect signin button on login page with place bet view
         self.login.send_user_info_to_main_signal.connect(self.init_game_with_given_user)
+
+        # connect new game button post game with place bet view
+        self.game_ui.new_game_signal.connect(self.init_game_with_given_user)
 
         # connect lock in button on place bet page with game view
         self.place_bet.open_game_view_signal.connect(self.switch_from_place_bet_to_game_ui)
 
         self.scoreboard.back_signal.connect(self.show_menu)
         
+        # connect exit to menu event to opening menu method
+        self.game_ui.exit_to_menu_signal.connect(self.open_menu_after_game)
+
         # set menu as initial central widget of main window
         self.setCentralWidget(self.pages)
         
@@ -89,10 +96,11 @@ class MainWindow(QMainWindow):
             
     def init_game_with_given_user(self, username):
         user_cur_score = lgpd.get_score(username)
+        user_best = lgpd.get_best_core(username)
         self.cur_player = Player(username)
         self.cur_player.score = user_cur_score
+        self.cur_player.best_score = user_best
         self.game = Game(self.cur_player)
-        self.game.bust_signal.connect(self.on_player_bust)
         self.place_bet.game = self.game
         self.place_bet.refresh_page()
         self.open_place_bet_view()
@@ -129,6 +137,9 @@ class MainWindow(QMainWindow):
     def on_player_bust(self):
         self.game_ui.player_busted()
         
+    # sets menu as current page (post game)
+    def open_menu_after_game(self):
+        self.pages.setCurrentWidget(self.menu)
 
 
 if __name__ == '__main__':
@@ -141,6 +152,11 @@ if __name__ == '__main__':
     # create and show main window
     window = MainWindow()
     window.show()
+
+    # load stylesheet for app
+    with open("./src/gui/main.qss", "r") as f:
+        _style = f.read()
+        app.setStyleSheet(_style)
 
     # start event loop
     app.exec()

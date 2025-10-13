@@ -18,15 +18,22 @@ class Menu(QWidget):
         # create login button
         login_button = QPushButton("Login")
         login_button.clicked.connect(self.open_login_view)
+        # set property for styling
+        login_button.setProperty("role", "login-button")
+
         # create show rules button
         show_rules_button = QPushButton("Rules")
         show_rules_button.clicked.connect(self.open_rules_view)
+
         # create show scoreboard button
         show_scoreboard_button = QPushButton("Scoreboard")
         show_scoreboard_button.clicked.connect(self.open_scoreboard_view)
+
         # create app exit button
         exit_button = QPushButton("Exit")
         exit_button.clicked.connect(self.exit_game)
+        # set property for styling
+        exit_button.setProperty("role", "exit-button")
 
 
         #---- create menu layout ----

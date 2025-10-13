@@ -28,7 +28,6 @@ class CardView(QGraphicsView):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         self.scene_ = QGraphicsScene(self)
-        self.scene_.setBackgroundBrush(QColor("#BDBAB9"))
         self.setScene(self.scene_)
 
     def update_view(self):

@@ -51,8 +51,7 @@ class PlayerHandWidget(QWidget):
         # ---- add card view to hand widget ----
         self.card_widget = CardView()
         self.hLayout.addWidget(self.card_widget)
-        self.setStyleSheet("border: 1px solid red; padding: 0px; margin: 0px;")
-    
+
     #update display:
     def update_player_info(self):
         if isinstance(self.owner, Dealer):
@@ -63,12 +62,14 @@ class PlayerHandWidget(QWidget):
             self.name_tag.setText(self.owner.name)
             self.score_tag.setText(f"score: {self.owner.score}")
             self.best_tag.setText(f"history best: {self.owner.best_score}")
-            
+
+    # used this method for player lose scenario, since removing the action buttons
+    # leaves the player unactionable
     def grey_out(self):
         if not hasattr(self, "_overlay_widget"):
         # create a QWidget covering the entire view, so that our user know that they cant draw anymore
             self._overlay_widget = QWidget(self)
-            self._overlay_widget.setStyleSheet("background-color: rgba(0, 0, 0, 150);")
+            self._overlay_widget.setStyleSheet("background-color: rgba(0, 0, 0, 150); border-radius: 6px")
             self._overlay_widget.setGeometry(self.rect())  # match size of QGraphicsView
             self._overlay_widget.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, False)  # block in
             self._overlay_widget.show()
