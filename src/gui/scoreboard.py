@@ -6,6 +6,26 @@ from PySide6.QtWidgets import (
 )
 import pandas as pd
 
+from PySide6.QtWidgets import QTableWidgetItem
+
+class NumericItem(QTableWidgetItem):
+    def __init__(self, text: str, value=None):
+        super().__init__(str(text))
+
+        value = int(value)
+
+        self._num = int(value)
+
+        self.setData(Qt.EditRole, self._num)
+        self.setData(Qt.UserRole, self._num)
+
+    def __lt__(self, other):
+        if isinstance(other, QTableWidgetItem):
+            other_num = other.data(Qt.EditRole)
+            return self._num < int(other_num)
+
+        return super().__lt__(other)
+
 class Scoreboard(QWidget):
     back_signal = Signal()
 
@@ -71,8 +91,9 @@ class Scoreboard(QWidget):
         self.table_shame.setSortingEnabled(False)
 
         df_top = df[df["score"] > 0].sort_values("score", ascending=False)
-        for _, row in df_top.reset_index(drop=True).iterrows():
-            self._append_row(self.table_top, str(row["username"]), str(int(row["score"])), str(int(row["best_score"])))
+        self.table_top.setSortingEnabled(False)
+        for _, row in df_top.iterrows():
+            self._append_row(self.table_top, row["username"], row["score"], row["best_score"])
 
 
         df_shame = df[df["score"] == 0].sort_values("username", ascending=True)
@@ -86,6 +107,19 @@ class Scoreboard(QWidget):
     def _append_row(self, table: QTableWidget, username: str, score: str, best: str):
         r = table.rowCount()
         table.insertRow(r)
-        table.setItem(r, 0, QTableWidgetItem(username))
-        table.setItem(r, 1, QTableWidgetItem(score))
-        table.setItem(r, 2, QTableWidgetItem(best))
+
+        item0 = QTableWidgetItem(username)
+
+
+        score_val = int(str(score))
+
+        best_val = int(str(best))
+
+
+        item1 = NumericItem(str(score_val), score_val)
+        item2 = NumericItem(str(best_val), best_val)
+
+        table.setItem(r, 0, item0)
+        table.setItem(r, 1, item1)
+        table.setItem(r, 2, item2)
+
