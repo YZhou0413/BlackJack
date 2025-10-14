@@ -24,6 +24,7 @@ class Game(QObject):
     dealer_finished_turn = Signal()
     card_reveal_signal = Signal()
     test_player_draw_signal = Signal()
+    fixed_start = Signal()
 
     gamer_stat = ["START", "WIN", "LOST", "BUST", "PUSH", "in-game"]
     def __init__(self, user):
@@ -131,6 +132,8 @@ class Game(QObject):
 
         self.deal_initial_hands(self.dealer)
         self.print_card(self.dealer)
+        
+        self.fixed_start.emit()
 
         print(r'If you want to hit (pull another card) type "game.add_on_click()"')
         print(r'When your happy with your hand and want to end your turn type "game.player_stands()"')
