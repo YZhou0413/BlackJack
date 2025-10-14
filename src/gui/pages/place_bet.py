@@ -28,8 +28,10 @@ class PlaceBet(QWidget):
         # name of logged in user
         # todo: fetch user data
         self.username = "blackjackwinner2010"
-        # current user balance
+        # new minimal balance
         # todo: fetch user data
+        self._new_min_bal = 900
+        # current user balance
         self._current_balance = 900
 
         # LAYOUT
@@ -86,7 +88,11 @@ class PlaceBet(QWidget):
 
         user_balance_label = QLabel("Balance: ")
         self.user_balance_field = QLabel()
-        self.user_balance_field.setText(str(self._current_balance - 100))
+        self.user_balance_field.setText(str(self._new_min_bal))
+
+        user_min_bal_label = QLabel("New min balance: ")
+        self.user_min_bal_field = QLabel()
+        self.user_min_bal_field.setText(str(self._new_min_bal - 100))
 
         # create layout for user info fields
         footer_layout = QGridLayout()
@@ -94,6 +100,8 @@ class PlaceBet(QWidget):
         footer_layout.addWidget(self.user_name_field, 0, 1)
         footer_layout.addWidget(user_balance_label, 1, 0)
         footer_layout.addWidget(self.user_balance_field, 1, 1)
+        footer_layout.addWidget(user_min_bal_label, 2, 0)
+        footer_layout.addWidget(self.user_min_bal_field, 2, 1)
 
         footer_container = QWidget()
         footer_container.setLayout(footer_layout)
@@ -108,6 +116,15 @@ class PlaceBet(QWidget):
 
     # PROPERTIES
     @property
+    def new_min_bal(self):
+        return self._new_min_bal
+
+    @new_min_bal.setter
+    def new_min_bal(self, new_balance):
+        self._new_min_bal = new_balance
+        self.user_min_bal_field.setText(str(self._new_min_bal))
+
+    @property
     def current_balance(self):
         return self._current_balance
 
@@ -115,7 +132,6 @@ class PlaceBet(QWidget):
     def current_balance(self, new_balance):
         self._current_balance = new_balance
         self.user_balance_field.setText(str(self._current_balance))
-
 
     @property
     def placed_bet(self):
@@ -147,11 +163,11 @@ class PlaceBet(QWidget):
     # INSTANCE METHODS
     def increase_bet(self):
         self.placed_bet += 100
-        self.current_balance -= 100
+        self.new_min_bal -= 100
         print("bet increased by 100")
 
         # if balance is below 100, disable increase bet button
-        if self.current_balance < 100:
+        if self.new_min_bal < 100:
             self.increase_bet_button.setEnabled(False)
 
         # if placed bet is at least 200, enable decrease bet button
@@ -160,7 +176,7 @@ class PlaceBet(QWidget):
 
     def decrease_bet(self):
         self.placed_bet -= 100
-        self.current_balance += 100
+        self.new_min_bal += 100
         print("bet decreased by 100")
 
         # if placed bet is below 200
@@ -168,7 +184,7 @@ class PlaceBet(QWidget):
             self.decrease_bet_button.setEnabled(False)
 
         # if balance is at least 100, enable the increase bet button
-        if self.current_balance >= 100:
+        if self.new_min_bal >= 100:
             self.increase_bet_button.setEnabled(True)
 
     # updates displayed bet value
@@ -179,15 +195,18 @@ class PlaceBet(QWidget):
         score = self.game.player.score
         bet = self.placed_bet
 
+        # show current user balance
+        self.current_balance = score
+
         if score == 0:
-            self.current_balance = 0
+            self.new_min_bal = 0
             self.lock_in_button.setText("Out of score")
             self.lock_in_button.setDisabled(True)
             self.increase_bet_button.setDisabled(True)
             self.decrease_bet_button.setDisabled(True)
 
         elif score >= bet:
-            self.current_balance = score - bet
+            self.new_min_bal = score - bet
             self.lock_in_button.setEnabled(True)
             self.increase_bet_button.setEnabled(score - bet >= 100)
             self.decrease_bet_button.setEnabled(bet > 100)
@@ -197,8 +216,7 @@ class PlaceBet(QWidget):
             while bet > score and bet > 100:
                 bet -= 100
             self.placed_bet = bet
-
-            self.current_balance = score - bet if score >= bet else 0
+            self.new_min_bal = score - bet if score >= bet else 0
             self.lock_in_button.setEnabled(score >= bet)
             self.increase_bet_button.setEnabled(False)
             self.decrease_bet_button.setEnabled(bet > 100)
