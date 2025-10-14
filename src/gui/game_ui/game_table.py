@@ -37,8 +37,10 @@ class GameTable(QWidget):
         #TODO: we should somehow remove these dummy items, cuz they might cause unexpected bugs and just intialize with Nones
         self._player = dummy_player()
         self._dealer = dummy_dealer()
+        self.setup_ui()
 
         # Dealer and player hands
+    def setup_ui(self):
         self.dealer_area = PlayerHandWidget(self.dealer)
         self.player_area = PlayerHandWidget(self.player)
 
@@ -111,12 +113,16 @@ class GameTable(QWidget):
         
         self.dealer_area.update_player_info()
         self.player_area.update_player_info()
-        
+        self.player_area.card_widget.reset_view()
+        self.dealer_area.card_widget.reset_view()
         self.render_initial_hands()
 
         self.game.dealer_drawn_card.connect(self.render_after_dealer_draw_new_card)
         self.game.dealer_finished_turn.connect(self.dealer_finished)
         self.game.card_reveal_signal.connect(self.reveal_dealer_card)
+        
+        #####test sig
+        self.game.test_player_draw_signal.connect(self.player_draw_card_use_hit)
 
     # display winner and post game buttons
     def display_endgame_ui(self):
@@ -239,10 +245,13 @@ class GameTable(QWidget):
         # todo: connect to backend (reset game instance)
 
         # reset buttons and status message
+        self.new_game_signal.emit(self.game.player.name)
+        self.game.initialize_game()
+        
+        
         self.reset_ui()
-
         # show place bet page like after sign in
-        print("player name on new game", self._player.name)
+        print("player name on new game", self.game.player.name)
         # todo fixbug: "Tester" is returned but should be
         #  name of logged in user
         # self.new_game_signal.emit(self._player.name)
@@ -251,7 +260,7 @@ class GameTable(QWidget):
     def on_exit_to_menu(self):
         # fire open menu signal
         self.exit_to_menu_signal.emit()
-
+    
         # reset buttons and status message
         self.reset_ui()
 
@@ -261,9 +270,12 @@ class GameTable(QWidget):
 
     def reset_ui(self):
         # switch back to player action buttons
+        self.player_area.reverse_gray_out()
+        self.dealer_area.reverse_gray_out()
         self.button_stack.show_action_buttons()
         self.button_stack.enable_action_buttons()
-
+        self.player_area.card_widget.reset_view()
+        self.dealer_area.card_widget.reset_view()
         # switch back to initial status message
         self.status_info_field.setText("It's your turn!")
 

@@ -60,3 +60,4 @@ class ButtonsStack(QStackedWidget):
     # show end game buttons (new game, exit to menu)
     def show_end_buttons(self):
         self.setCurrentWidget(self.end_buttons_container)
+    

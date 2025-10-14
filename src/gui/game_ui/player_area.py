@@ -78,5 +78,8 @@ class PlayerHandWidget(QWidget):
 
         # force repaint
         self._overlay_widget.update()
+    def reverse_gray_out(self):
+        if hasattr(self, "_overlay_widget"):
+            self._overlay_widget.hide()
 
       

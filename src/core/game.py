@@ -23,6 +23,7 @@ class Game(QObject):
     dealer_drawn_card = Signal() #dealer draw, add cards to ui until endgame triggered
     dealer_finished_turn = Signal()
     card_reveal_signal = Signal()
+    test_player_draw_signal = Signal()
 
     gamer_stat = ["START", "WIN", "LOST", "BUST", "PUSH", "in-game"]
     def __init__(self, user):
@@ -72,6 +73,13 @@ class Game(QObject):
             print("deck", [(card.rank, card.suit) for card in hand_owner])
             print(len(hand_owner))
             
+    def test_hand(self, hand_owner, cardRank):
+        hand_owner.hand.append(Card(cardRank, "hearts"))
+        if type(hand_owner) is Dealer:
+            self.dealer_drawn_card.emit()
+        else:
+            self.test_player_draw_signal.emit()
+        
 
     '''------------------Deck------------------'''
 

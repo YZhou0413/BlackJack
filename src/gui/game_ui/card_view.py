@@ -30,8 +30,10 @@ class CardView(QGraphicsView):
         self.scene_ = QGraphicsScene(self)
         self.setScene(self.scene_)
 
-    def update_view(self):
-        pass    
+    def reset_view(self):
+        self.scene_.clear()
+        self.viewport().update()
+            
     
             
     # adds a card to this cardview 
