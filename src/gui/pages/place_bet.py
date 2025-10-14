@@ -245,7 +245,7 @@ class PlaceBet(QWidget):
         if self.game.player.score < self.placed_bet:
             self.placed_bet = PlaceBet.DEFAULT_START_BET
         self.update_user_balance_field()
-        self.placed_bet_field.setText(f"${self.placed_bet}")
+        self.update_placed_bet_field()
             
         
 
