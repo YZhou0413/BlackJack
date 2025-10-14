@@ -39,6 +39,7 @@ class GameTable(QWidget):
         self._dealer = dummy_dealer()
         self.setup_ui()
 
+
         # Dealer and player hands
     def setup_ui(self):
         self.dealer_area = PlayerHandWidget(self.dealer)
@@ -215,14 +216,15 @@ class GameTable(QWidget):
     #moved the phase up to end game from game to ui
     def dealer_finished(self):
         self.game.print_card(self.game.dealer)
-        if hasattr(self, 'dealer_timer'):
-            self.dealer_timer.stop()
-            self.dealer_timer.deleteLater()
+        if getattr(self, 'dealer_timer', None):
+            if self.dealer_timer.isActive():
+                self.dealer_timer.stop()
 
         # trigger game result
         self.game.calc_winner()
         # display result
         self.display_endgame_ui()
+
 
     # shorthand function for calling CardView method
     def reveal_dealer_card(self):
@@ -245,11 +247,12 @@ class GameTable(QWidget):
         # todo: connect to backend (reset game instance)
 
         # reset buttons and status message
-        self.new_game_signal.emit(self.game.player.name)
         self.game.initialize_game()
         
         
         self.reset_ui()
+        self.new_game_signal.emit(self.game.player.name)
+
         # show place bet page like after sign in
         print("player name on new game", self.game.player.name)
         # todo fixbug: "Tester" is returned but should be
