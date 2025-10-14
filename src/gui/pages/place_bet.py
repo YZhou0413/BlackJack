@@ -1,9 +1,9 @@
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, Qt
 from PySide6.QtWidgets import (
     QWidget,
     QTextEdit,
     QPushButton,
-    QVBoxLayout, QLabel, QGridLayout, QHBoxLayout, QApplication
+    QVBoxLayout, QLabel, QGridLayout, QHBoxLayout, QApplication, QLineEdit
 )
 
 from src.core.game import Game
@@ -12,6 +12,12 @@ from src.core.game import Game
 class PlaceBet(QWidget):
     # default placed bet after successfully signing up
     DEFAULT_START_BET = 100
+
+    # maximum width of mid section
+    MID_MAX_WIDTH = 280
+
+    # width of bet buttons
+    BET_BUTTON_WIDTH = 110
 
     # create signal for showing game view
     open_game_view_signal = Signal()
@@ -37,10 +43,14 @@ class PlaceBet(QWidget):
         # LAYOUT
         #----elements of HEADER ----
         page_header = QLabel("Place your bet!")
+        page_header.setProperty("role", "header")
+        page_header.setAlignment(Qt.AlignCenter)
 
         #---- textfields and buttons of CENTER ----
         # create field displaying placed bet
-        self.placed_bet_field = QTextEdit("100$")
+        self.placed_bet_field = QLineEdit("100$")
+        self.placed_bet_field.setProperty("role", "bet-field")
+        self.placed_bet_field.setAlignment(Qt.AlignCenter)
         self.placed_bet_field.setReadOnly(True)
 
         # create increase bet button
@@ -56,6 +66,9 @@ class PlaceBet(QWidget):
         # set property for styling
         self.decrease_bet_button.setProperty("role", "decrease-button")
 
+        # set width of bet buttons
+        self.decrease_bet_button.setFixedWidth(PlaceBet.BET_BUTTON_WIDTH)
+        self.increase_bet_button.setFixedWidth(PlaceBet.BET_BUTTON_WIDTH)
 
         # create lock in button
         self.lock_in_button = QPushButton("Lock in")
@@ -65,7 +78,10 @@ class PlaceBet(QWidget):
 
         # create flow container for bet buttons
         bet_buttons_layout = QHBoxLayout()
+        # remove margins around buttons
+        bet_buttons_layout.setContentsMargins(0, 0, 0, 0 )
         bet_buttons_layout.addWidget(self.decrease_bet_button)
+        bet_buttons_layout.addStretch()
         bet_buttons_layout.addWidget(self.increase_bet_button)
 
         bet_buttons_container = QWidget()
@@ -78,6 +94,7 @@ class PlaceBet(QWidget):
         center_layout.addWidget(self.lock_in_button)
 
         center_container = QWidget()
+        center_container.setMaximumWidth(PlaceBet.MID_MAX_WIDTH)
         center_container.setLayout(center_layout)
 
         #---- status elements of FOOTER ----
@@ -104,10 +121,12 @@ class PlaceBet(QWidget):
         footer_layout.addWidget(self.user_min_bal_field, 2, 1)
 
         footer_container = QWidget()
+        footer_container.setProperty("role", "user-data")
         footer_container.setLayout(footer_layout)
 
         #---- create page layout----
         placebet_layout = QVBoxLayout()
+        placebet_layout.setAlignment(Qt.AlignHCenter)
         placebet_layout.addWidget(page_header)
         placebet_layout.addWidget(center_container)
         placebet_layout.addWidget(footer_container)

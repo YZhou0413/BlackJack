@@ -5,7 +5,7 @@
 
 /* Base styling */
 
-/* main window styling */
+/* ==== MAIN WINDOW styling ==== */
 QMainWindow {
     background-color: #1d5b06;
 }
@@ -61,7 +61,7 @@ QDialog {
 
 /* ---- page specific styling ---- */
 
-/* Menu styling */
+/* ==== MENU styling ==== */
 /* -> login button */
 QPushButton[role="login-button"] {
     border: 1px solid #9cb01c;
@@ -78,7 +78,7 @@ QPushButton[role="exit-button"]::hover {
     background-color: #d6440f;
 }
 
-/* Login styling */
+/* ==== LOGIN styling ==== */
 Login QPushButton {
     background-color: #ffe43a;
     color: #552510;
@@ -88,7 +88,20 @@ Login QPushButton::hover {
     background-color: #FFE858;
 }
 
-/* Place Bet Page styling */
+/* ==== PLACE BET PAGE styling ==== */
+/* -> header style */
+QLabel[role="header"] {
+    font-size: 24px;
+}
+
+/* -> bet display field */
+QLineEdit[role="bet-field"] {
+    border: None;
+    background-color: #2a6223;
+    color: #14ff2b;
+    font-size: 24px;
+}
+
 /* -> increase button */
 QPushButton[role="increase-button"]::enabled {
     border: 1px solid #33d80a;
@@ -115,5 +128,14 @@ QPushButton[role="lock-in-button"] {
 QPushButton[role="lock-in-button"]::hover {
     border: 1px solid #9cb01c;
 }
+
+/* -> user data */
+QWidget[role="user-data"] {
+    border-radius: 10px;
+    background-color: #1B4C15;
+    color: #d3da13;
+}
+
+
 
 
