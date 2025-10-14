@@ -5,13 +5,13 @@
   - you are playing against a dealer.
   - You both get two cards in hand, one card in the dealer's hand will be revealed and the other one is hidden at the beginning of the game.
   - Your goal is make the sum of cards in your hand to get as close as possible to 21, but not over 21.
-  ##### ♣️ In your turn:
+##### ♣️ In your turn:
   - In your turn, you can **hit** to draw another card from deck. But be careful -- if your new card makes your hand sum bigger than 21, then you 're busted and it's a **win for the dealer.**
   -  When you are confident with your hand, you can **stand** to end your turn
-  ##### ♥️ Now it's the dealer's turn:
+##### ♥️ Now it's the dealer's turn:
   - If you 're busted, the dealer will just reveal his second card and claim the victory.
   - Otherwise, the dealer will start draw cards, until they decide to stand or they bust.
-  ##### ♠️ When nobody busted, who has won?
+##### ♠️ When nobody busted, who has won?
   - who has a higher sum of their hand has won. 😎
   
 ### 🕹️ How to play in our console?
