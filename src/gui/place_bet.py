@@ -56,10 +56,10 @@ class PlaceBet(QWidget):
 
 
         # create lock in button
-        lock_in_button = QPushButton("Lock in")
-        lock_in_button.clicked.connect(self.lock_in_bet)
+        self.lock_in_button = QPushButton("Lock in")
+        self.lock_in_button.clicked.connect(self.lock_in_bet)
         # set property for styling
-        lock_in_button.setProperty("role", "lock-in-button")
+        self.lock_in_button.setProperty("role", "lock-in-button")
 
         # create flow container for bet buttons
         bet_buttons_layout = QHBoxLayout()
@@ -73,7 +73,7 @@ class PlaceBet(QWidget):
         center_layout = QVBoxLayout()
         center_layout.addWidget(self.placed_bet_field)
         center_layout.addWidget(bet_buttons_container)
-        center_layout.addWidget(lock_in_button)
+        center_layout.addWidget(self.lock_in_button)
 
         center_container = QWidget()
         center_container.setLayout(center_layout)
@@ -178,7 +178,13 @@ class PlaceBet(QWidget):
     # updates displayed user balance
     def update_user_balance_field(self):
         if self.game is not None:
-            self.current_balance = self.game.player.score - 100
+            if self.game.player.score >= 100:
+                self.current_balance = self.game.player.score - 100
+            else:
+                self.current_balance = 0
+                self.lock_in_button.setText("Not enough score to play")
+                self.increase_bet_button.setDisabled(True)
+                self.lock_in_button.setDisabled(True)
 
 
         
