@@ -31,11 +31,11 @@ class CardView(QGraphicsView):
         self.setScene(self.scene_)
 
     def reset_view(self):
-        self.scene_.clear()
+        # create new scene for automatic centering behaviour
+        self.scene_ = QGraphicsScene(self)
+        self.setScene(self.scene_)
         self.viewport().update()
-            
-    
-            
+
     # adds a card to this cardview 
     def add_card_to_view(self, card, owner='user'):
         #decide which proxy list to use

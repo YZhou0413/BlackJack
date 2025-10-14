@@ -141,9 +141,6 @@ class MainWindow(QMainWindow):
         self.scoreboard.load_scores()
         self.pages.setCurrentWidget(self.scoreboard)
         
-    def on_player_bust(self):
-        self.game_ui.player_busted()
-        
     def open_rule_view(self):
         self.pages.setCurrentWidget(self.rule)
         

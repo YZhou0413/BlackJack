@@ -267,9 +267,6 @@ class GameTable(QWidget):
         # reset buttons and status message
         self.reset_ui()
 
-        # show menu
-        # todo: show logout button instead of sign in button
-        #  or logout player when returning to menu?
 
     def reset_ui(self):
         # switch back to player action buttons
