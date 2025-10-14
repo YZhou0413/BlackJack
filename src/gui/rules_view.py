@@ -25,7 +25,6 @@ class RuleWidget(QWidget):
         page_widget.setLayout(page_layout)
 
         text_browser = QTextBrowser(page_widget)
-        text_browser.setFont(QFont("Source Han Sans SC Medium", 12))
 
         self.load_markdown_file(text_browser, "./README.md")
 
