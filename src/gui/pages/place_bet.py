@@ -177,14 +177,14 @@ class PlaceBet(QWidget):
 
     # updates displayed user balance
     def update_user_balance_field(self):
-        if self.game is not None:
-            if self.game.player.score >= 100:
-                self.current_balance = self.game.player.score - 100
-            else:
-                self.current_balance = 0
-                self.lock_in_button.setText("Not enough score to play")
-                self.increase_bet_button.setDisabled(True)
-                self.lock_in_button.setDisabled(True)
+        if self.game.player.score >= 100:
+            self.current_balance = self.game.player.score - 100
+        else:
+            self.current_balance = 0
+            self.lock_in_button.setText("Not enough score to play")
+            self.increase_bet_button.setDisabled(True)
+            self.decrease_bet_button.setDisabled(True)
+            self.lock_in_button.setDisabled(True)
 
 
         
@@ -205,7 +205,12 @@ class PlaceBet(QWidget):
         
     def refresh_page(self):
         self.update_user_name()
+        if self.game.player.score < self.placed_bet:
+            self.placed_bet = PlaceBet.DEFAULT_START_BET
         self.update_user_balance_field()
+        self.placed_bet_field.setText(f"${self.placed_bet}")
+            
+        
 
 
 if __name__ == "__main__":
