@@ -233,7 +233,7 @@ class Game(QObject):
             self.dealer_finished_turn.emit()
             return
 
-        if self.calculate_hand(self.dealer) >= self.calculate_hand(self.player) and self.calculate_hand(self.dealer) > 11:
+        if self.calculate_hand(self.dealer) > self.calculate_hand(self.player) and self.calculate_hand(self.dealer) > 11:
             self.dealer_finished_turn.emit()
         elif self.calculate_hand(self.dealer) < 17:
             new_card = self.draw_card()

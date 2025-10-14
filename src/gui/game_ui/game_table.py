@@ -201,10 +201,9 @@ class GameTable(QWidget):
 
 
         # start drawing
-        if not hasattr(self, 'dealer_timer'):
-            self.dealer_timer = QTimer()
-            self.dealer_timer.setInterval(1000)  # 1s between cards
-            self.dealer_timer.timeout.connect(self.game.dealer_draw)
+        self.dealer_timer = QTimer()
+        self.dealer_timer.setInterval(1000)  # 1s between cards
+        self.dealer_timer.timeout.connect(self.game.dealer_draw)
         self.dealer_timer.start()
 
     #render after a new card is added to dealer hand
