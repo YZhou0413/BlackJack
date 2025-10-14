@@ -22,9 +22,10 @@ from src.core.game import Game
 import src.core.login_panda as lgpd
 
 from src.gui.scoreboard import Scoreboard
+from src.gui.rules_view import RuleWidget
 
 #linus password 12345
-#yoyo ABCDE%&/
+
 
 # Represents app window
 class MainWindow(QMainWindow):
@@ -68,11 +69,15 @@ class MainWindow(QMainWindow):
 
         self.scoreboard = Scoreboard()
         self.pages.addWidget(self.scoreboard)
+        
+        self.rule = RuleWidget()
+        self.pages.addWidget(self.rule)
 
         # connect login button in menu with login page
         self.menu.open_login_signal.connect(self.open_login_view)
         self.menu.open_scoreboard_signal.connect(self.open_scoreboard_view)
         self.menu.open_login_signal.connect(self.open_login_view)
+        self.menu.open_rule_view_signal.connect(self.open_rule_view)
 
         # connect signin button on login page with place bet view
         self.login.send_user_info_to_main_signal.connect(self.init_game_with_given_user)
@@ -84,12 +89,14 @@ class MainWindow(QMainWindow):
         self.place_bet.open_game_view_signal.connect(self.switch_from_place_bet_to_game_ui)
 
         self.scoreboard.back_signal.connect(self.show_menu)
-        
+        self.rule.back_signal.connect(self.show_menu)
         # connect exit to menu event to opening menu method
         self.game_ui.exit_to_menu_signal.connect(self.open_menu_after_game)
+        
 
         # set menu as initial central widget of main window
         self.setCentralWidget(self.pages)
+        
         
         
  
@@ -136,6 +143,9 @@ class MainWindow(QMainWindow):
         
     def on_player_bust(self):
         self.game_ui.player_busted()
+        
+    def open_rule_view(self):
+        self.pages.setCurrentWidget(self.rule)
         
     # sets menu as current page (post game)
     def open_menu_after_game(self):
