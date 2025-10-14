@@ -16,8 +16,8 @@
   
 ### 🕹️ How to play in our console?
 ##### ‼️ Please do this in the root folder `python-winter-2526-sopro-group7` in your terminal:  
-  - for unix system: `python3 -m src.gui.main`
-  - for windows system: `py -m src.gui.main`
+  - for unix system: `python3 -m blackjack`
+  - for windows system: `py -m blackjack`
 ##### 🤔 Next, you can login or create a new account (Both via the login button)
   - As new player, you can just put in a user name and a password (please memorize your password because we cant reset it for you), and confirm to create a new account. After the account creation, you will gain 1000 chips (or we call it score) to play your first round. Once you lost all chips in your account, you can't play the game anymore since you 're broke, go touch some grass and quit gambling maybe.
   - If you already have an account, just login with your credentials.

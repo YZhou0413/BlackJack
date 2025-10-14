@@ -12,17 +12,17 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QStackedWidget
 )
-from src.gui.menu import Menu
+from src.gui.pages.menu import Menu
 from src.gui.game_ui.game_table import GameTable
 from src.gui.login.login import Login
-from src.gui.place_bet import PlaceBet
+from src.gui.pages.place_bet import PlaceBet
 
-from src.core.player import Player, Dealer
+from src.core.player import Player
 from src.core.game import Game
 import src.core.login_panda as lgpd
 
-from src.gui.scoreboard import Scoreboard
-from src.gui.rules_view import RuleWidget
+from src.gui.pages.scoreboard import Scoreboard
+from src.gui.pages.rules_view import RuleWidget
 
 #linus password 12345
 
@@ -152,10 +152,7 @@ class MainWindow(QMainWindow):
         self.pages.setCurrentWidget(self.menu)
 
 
-if __name__ == '__main__':
-    '''
-    write additional testing code here for things that don't work well as unit tests:
-    '''
+def run():
     # create QApp instance
     app = QApplication([])
 
@@ -170,3 +167,7 @@ if __name__ == '__main__':
 
     # start event loop
     app.exec()
+
+
+if __name__ == '__main__':
+    run()
