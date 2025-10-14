@@ -16,6 +16,7 @@ class RuleWidget(QWidget):
 
         back_btn = QPushButton("Back")
         back_btn.clicked.connect(lambda: self.back_signal.emit())
+        main_layout.addWidget(back_btn)
 
         page_widget = QWidget(self)
         page_layout = QVBoxLayout(page_widget)
