@@ -146,7 +146,28 @@ class MainWindow(QMainWindow):
         
     # sets menu as current page (post game)
     def open_menu_after_game(self):
+        self.show_menu()
+        
+    def show_menu(self):
+
+        self.pages.removeWidget(self.login)
+        self.pages.removeWidget(self.place_bet)
+
+        
+        self.login = Login()
+        self.place_bet = PlaceBet()
+
+        self.pages.addWidget(self.login)
+        self.pages.addWidget(self.place_bet)
+
+        self.login.send_user_info_to_main_signal.connect(self.init_game_with_given_user)
+        self.place_bet.open_game_view_signal.connect(self.switch_from_place_bet_to_game_ui)
+
+        self.game = None
+        self.cur_player = None
+
         self.pages.setCurrentWidget(self.menu)
+
 
 
 def run():
