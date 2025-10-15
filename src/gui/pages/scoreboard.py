@@ -37,7 +37,6 @@ class Scoreboard(QWidget):
     def _build_ui(self):
         title = QLabel("Scoreboard")
         title.setAlignment(Qt.AlignCenter)
-        title.setStyleSheet("font-weight: bold; font-size: 18px;")
 
         self.table_top = QTableWidget(0, 3)
         self.table_top.setHorizontalHeaderLabels(["Username", "Score", "Best Score"])
@@ -46,11 +45,9 @@ class Scoreboard(QWidget):
         self.table_top.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_top.setSelectionMode(QAbstractItemView.SingleSelection)
         self.table_top.setSortingEnabled(True)
-        self.table_top.setStyleSheet("background-color: #f5f0dc;")
 
         shame_label = QLabel("Hall of Shame")
         shame_label.setAlignment(Qt.AlignCenter)
-        shame_label.setStyleSheet("font-weight: bold; font-size: 18px;")
 
         self.table_shame = QTableWidget(0, 3)
         self.table_shame.setHorizontalHeaderLabels(["Username", "Score", "Best Score"])
@@ -59,7 +56,6 @@ class Scoreboard(QWidget):
         self.table_shame.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_shame.setSelectionMode(QAbstractItemView.SingleSelection)
         self.table_shame.setSortingEnabled(True)
-        self.table_shame.setStyleSheet("background-color: #f5f0dc;")
 
 
         back_btn = QPushButton("Back")
