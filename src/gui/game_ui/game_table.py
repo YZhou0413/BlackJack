@@ -2,7 +2,7 @@ import sys
 import os
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QMainWindow, QApplication, QStyle,
+    QLabel, QMainWindow, QApplication,
 )
 from PySide6.QtCore import QSize, QTimer, Signal, Qt
 from src.gui.game_ui.buttons_stack import ButtonsStack
@@ -11,7 +11,6 @@ from src.gui.game_ui.buttons_stack import ButtonsStack
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.core.game import Game
-from src.core.cards import Card
 from src.core.player import Player, Dealer
 from src.gui.game_ui.player_area import PlayerHandWidget
 from src.gui.game_ui.test_dummys import dummy_player, dummy_dealer

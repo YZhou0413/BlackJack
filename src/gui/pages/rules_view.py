@@ -1,7 +1,6 @@
-import sys
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextBrowser, QPushButton
-from PySide6.QtGui import QFont
 from PySide6.QtCore import QSize, Signal, Qt
+import sys
 import markdown
 
 class RuleWidget(QWidget):

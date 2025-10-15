@@ -56,7 +56,6 @@ class Menu(QWidget):
         for button in menu_container.findChildren(QPushButton):
             button.setAutoDefault(True)
             button.setFocusPolicy(Qt.StrongFocus)
-            print("set")
 
         # create layout for page
         menu_page_layout = QHBoxLayout()

@@ -1,7 +1,7 @@
 from PySide6.QtCore import Signal, Qt
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel,
-    QTableWidget, QTableWidgetItem, QPushButton,
+    QTableWidget, QPushButton,
     QAbstractItemView
 )
 import pandas as pd

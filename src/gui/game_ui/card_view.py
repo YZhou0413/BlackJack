@@ -1,11 +1,8 @@
 from PySide6.QtWidgets import (
     QGraphicsView,
     QGraphicsScene,
-    QGraphicsProxyWidget,
-    
 )
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QColor, QBrush
 from src.gui.game_ui.card_ui import CardUI
 
 # Represents view of hands

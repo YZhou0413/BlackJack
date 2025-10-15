@@ -1,5 +1,4 @@
-from PySide6.QtWidgets import QStackedWidget, QPushButton, QHBoxLayout, QWidget, QSizePolicy
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QStackedWidget, QPushButton, QHBoxLayout, QWidget
 
 class ButtonsStack(QStackedWidget):
     BUTTON_STACK_WIDTH = 450
