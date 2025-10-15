@@ -15,6 +15,7 @@ QPushButton {
     background-color: #1b4516;
     padding: 8px;
     border-radius: 6px;
+    height: 26px;
 
     /* button text style */
     font-size: 20px;
@@ -66,6 +67,14 @@ QDialog {
 /* ---- page specific styling ---- */
 
 /* ==== MENU styling ==== */
+Menu QPushButton {
+    margin: 0;
+}
+
+Menu QPushButton::focus {
+    border: 2px solid #9cb01c;
+}
+
 /* -> login button */
 QPushButton[role="login-button"] {
     border: 1px solid #9cb01c;
@@ -80,6 +89,10 @@ QPushButton[role="login-button"]::hover {
 /* -> exit button */
 QPushButton[role="exit-button"]::hover {
     background-color: #d6440f;
+}
+
+QPushButton[role="exit-button"]::focus {
+    border: 2px solid #d6440f;
 }
 
 /* ==== LOGIN styling ==== */

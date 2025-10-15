@@ -1,12 +1,15 @@
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, QSize, Qt
 from PySide6.QtWidgets import (
-    QPushButton, QVBoxLayout, QWidget
+    QPushButton, QVBoxLayout, QWidget, QHBoxLayout
 )
 import sys
 
 
 # represents game menu
 class Menu(QWidget):
+    # width of menu
+    MENU_WIDTH = 280
+
     # create signal for showing login page
     open_login_signal = Signal()
     open_scoreboard_signal = Signal()
@@ -44,8 +47,23 @@ class Menu(QWidget):
         menu_layout.addWidget(show_scoreboard_button)
         menu_layout.addWidget(exit_button)
 
+        # create menu items container for centering menu in window
+        menu_container = QWidget()
+        menu_container.setMaximumSize(QSize(Menu.MENU_WIDTH, 240))
+        menu_container.setLayout(menu_layout)
+
+        # set all menu buttons focusable and activate on return
+        for button in menu_container.findChildren(QPushButton):
+            button.setAutoDefault(True)
+            button.setFocusPolicy(Qt.StrongFocus)
+            print("set")
+
+        # create layout for page
+        menu_page_layout = QHBoxLayout()
+        menu_page_layout.addWidget(menu_container)
+
         # add menu elements to menu
-        self.setLayout(menu_layout)
+        self.setLayout(menu_page_layout)
 
 
     # SIGNAL HANDLER METHODS
