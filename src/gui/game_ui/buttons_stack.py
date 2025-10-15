@@ -2,9 +2,12 @@ from PySide6.QtWidgets import QStackedWidget, QPushButton, QHBoxLayout, QWidget,
 from PySide6.QtCore import Qt
 
 class ButtonsStack(QStackedWidget):
+    BUTTON_STACK_WIDTH = 450
+
     # CONSTRUCTOR
     def __init__(self):
         super().__init__()
+        self.setFixedWidth(ButtonsStack.BUTTON_STACK_WIDTH)
 
         #---- player action buttons ----
         # create player action buttons
@@ -15,6 +18,7 @@ class ButtonsStack(QStackedWidget):
         # setup action buttons container layout
         self.action_buttons_container = QWidget()
         self.action_buttons_layout = QHBoxLayout()
+        self.action_buttons_layout.setContentsMargins(0, 0, 0, 0)
 
         self.action_buttons_layout.addWidget(self.hit_button)
         self.action_buttons_layout.addWidget(self.stand_button)

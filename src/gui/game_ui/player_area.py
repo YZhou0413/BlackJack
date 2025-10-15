@@ -13,7 +13,7 @@ from src.gui.game_ui.card_view import CardView
 # Represents the player info and view of hand
 class PlayerHandWidget(QWidget):
     HAND_FIXED_WIDTH = 700
-    HAND_FIXED_HEIGHT = 150  # hand takes 30% window height
+    HAND_MIN_HEIGHT = 150  # hand takes 30% window height
 
     def __init__(self, hand_owner):
         super().__init__()
@@ -25,13 +25,14 @@ class PlayerHandWidget(QWidget):
         # create horizontal layout for player hand
         self.hLayout = QHBoxLayout()
         self.setLayout(self.hLayout)
-        self.setFixedHeight(int(PlayerHandWidget.HAND_FIXED_HEIGHT))
+        self.setMinimumHeight(int(PlayerHandWidget.HAND_MIN_HEIGHT))
 
         # ---- Create stats area ----
         # set vertical layout for stats area
         self.vLayout = QVBoxLayout()
         self.stats_area = QWidget(parent=self)
         self.stats_area.setLayout(self.vLayout)
+        self.stats_area.setProperty("role", "stats")
 
         self.stats_area.setFixedHeight(150)
         self.stats_area.setFixedWidth(180)
@@ -43,7 +44,11 @@ class PlayerHandWidget(QWidget):
         self.vLayout.addWidget(self.name_tag)
         self.vLayout.addWidget(self.score_tag)
         self.vLayout.addWidget(self.best_tag)
+        self.vLayout.setContentsMargins(0, 0, 0, 0)
 
+        # center stats
+        for child in self.stats_area.findChildren(QLabel):
+            child.setAlignment(Qt.AlignCenter)
 
         # Add stats area to layout
         self.hLayout.addWidget(self.stats_area)
