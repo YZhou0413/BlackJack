@@ -268,7 +268,13 @@ class Game(QObject):
             self.player.hand.append(card)
 
             if self.is_bust(self.player):
-                return ("bust", None)
+                self.player_is_busted = True
+                self.phase_up()
+
+                self.print_card(self.player)
+                #self.dealer_draw() #reveal dealer card -> dealer actions (for better ui display, this is removed from here)
+                #return
+                return ("bust", card)
             return ("hit", card)
 
         else:

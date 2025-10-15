@@ -259,11 +259,10 @@ class GameTable(QWidget):
         # call model once (must return (res, info))
         res, info = self.game.ai_play_step()
 
-        if res == "hit":
-            if info is not None:
-                self.player_area.card_widget.add_card_to_view(info, owner="user")
-                self.player_area.card_widget.viewport().update()
 
+        if res == "hit":
+            self.player_area.card_widget.add_card_to_view(info, owner="user")
+            self.player_area.card_widget.viewport().update()
             # if this hit ended the player's turn (bust or status changed)
             if getattr(self.game, "player_is_busted", False) or self.game.player.status != "in-game":
                 self.player_area.grey_out()
@@ -273,6 +272,8 @@ class GameTable(QWidget):
                 return
 
         elif res == "bust":
+            self.player_area.card_widget.add_card_to_view(info, owner="user")
+            self.player_area.card_widget.viewport().update()
             self.player_area.grey_out()
             self.button_stack.disable_action_buttons()
             self._stop_ai()
