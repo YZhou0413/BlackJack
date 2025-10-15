@@ -256,10 +256,23 @@ class Game(QObject):
         print("-----after-----")
         print(self.ai_play)
     
-    def ai_plays(self):                                                 #AI Plays for Player if turned True --> player_stands()
-        while self.calculate_hand(self.player) < 17:
-            self.btn_hit_on_click()
-        self.btn_stand_on_click()
+    def ai_play_step(self):                                              #AI Plays step by step
+        if getattr(self.player, "status", "") != "in-game":
+            return ("noop", None)
+
+        p_score = self.calculate_hand(self.player)
+
+        if p_score < 17:
+            card = self.draw_card()
+            self.player.hand.append(card)
+
+            if self.is_bust(self.player):
+                return ("bust", None)
+            return ("hit", card)
+
+        else:
+            return ("stand", None)
+
 
 
 

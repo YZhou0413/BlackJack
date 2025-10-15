@@ -39,6 +39,11 @@ class GameTable(QWidget):
         self._dealer = dummy_dealer()
         self.setup_ui()
 
+        self._ai_timer = QTimer(self)
+        self._ai_timer.setInterval(1000)
+        self._ai_timer.timeout.connect(self._ai_step)
+        self._ai_running = False
+
 
         # Dealer and player hands
     def setup_ui(self):
@@ -231,15 +236,67 @@ class GameTable(QWidget):
         self.dealer_area.card_widget.reveal_dealer_second_card()
 
 
-    # activate ai driven player
     def on_ai_clicked(self):
-        # todo: connect to backend (let ai play)
-
-        # update status message
+        # start AI only if not already running and we have a game
+        if self._ai_running or self.game is None:
+            return
         self.status_info_field.setText("AI is playing for you now!")
-        # disable action buttons
         self.button_stack.disable_action_buttons()
-        pass
+        self._ai_running = True
+        # run one immediate step for responsiveness, then continue on timer
+        self._ai_step()
+        if not self._ai_timer.isActive():
+            self._ai_timer.start()
+
+
+    def _ai_step(self):
+        # guard
+        if not self._ai_running or self.game is None:
+            self._stop_ai()
+            return
+
+        # call model once (must return (res, info))
+        res, info = self.game.ai_play_step()
+
+        if res == "hit":
+            if info is not None:
+                self.player_area.card_widget.add_card_to_view(info, owner="user")
+                self.player_area.card_widget.viewport().update()
+
+            # if this hit ended the player's turn (bust or status changed)
+            if getattr(self.game, "player_is_busted", False) or self.game.player.status != "in-game":
+                self.player_area.grey_out()
+                self.button_stack.disable_action_buttons()
+                self._stop_ai()
+                QTimer.singleShot(500, self.dealer_turn_start)
+                return
+
+        elif res == "bust":
+            self.player_area.grey_out()
+            self.button_stack.disable_action_buttons()
+            self._stop_ai()
+            QTimer.singleShot(500, self.dealer_turn_start)
+            return
+
+        elif res == "stand":
+            self._stop_ai()
+            self.stand()
+            return
+
+        # noop -> next timer tick will call _ai_step again
+
+
+    def _stop_ai(self):
+        if self._ai_timer.isActive():
+            self._ai_timer.stop()
+        self._ai_running = False
+        # if player's still in-game, re-enable controls
+        if self.game and getattr(self.game.player, "status", "") == "in-game":
+            self.button_stack.enable_action_buttons()
+            self.status_info_field.setText("Your turn")
+
+
+
 
     #---- game end methods ----
 
