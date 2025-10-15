@@ -1,19 +1,24 @@
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, Qt
 from PySide6.QtWidgets import (
     QWidget,
     QPushButton,
     QFormLayout,
     QLineEdit,
     QApplication,
-    QTextEdit
+    QTextEdit, QVBoxLayout
 )
 from src.gui.login.login_approve_dialog import ApproveDialog
 import src.core.login_panda as lgpd 
 
 class Login(QWidget):
+    LOGIN_WIDTH = 280
+
     # create signal for opening place bet view
     # open_place_bet_signal = Signal()
     send_user_info_to_main_signal = Signal(object)
+
+    # create signal for returning to menu
+    back_signal = Signal()
 
     # CONSTRUCTOR
     def __init__(self):
@@ -28,30 +33,61 @@ class Login(QWidget):
 
         # create user input field
         self.username_input_field = QLineEdit()
-        self.username_input_field.setPlaceholderText("username")
+        self.username_input_field.setAlignment(Qt.AlignCenter)
+        # self.username_input_field.setPlaceholderText("username")
 
         # create password input field
         self.password_input_field = QLineEdit()
+        self.password_input_field.setAlignment(Qt.AlignCenter)
         self.password_input_field.setEchoMode(QLineEdit.EchoMode.Password)
-        self.password_input_field.setPlaceholderText("password")
+        # self.password_input_field.setPlaceholderText("password")
 
         # create signin button
         signin_button = QPushButton("Sign in")
+        signin_button.setProperty("role", "sign-in")
         signin_button.clicked.connect(self.validate_signin)
+        # fires clicked signal on enter
+        signin_button.setAutoDefault(True)
+        signin_button.setFocusPolicy(Qt.StrongFocus)
+
+        # focus next form element on enter
+        self.username_input_field.returnPressed.connect(self.password_input_field.setFocus)
+        self.password_input_field.returnPressed.connect(signin_button.setFocus)
 
         # create form info textfield
         self.form_info = QTextEdit()
         self.form_info.setText("Creates a new account, if the username is not yet taken.")
         self.form_info.setReadOnly(True)
+        self.form_info.setMaximumHeight(100)
+        self.form_info.setFocusPolicy(Qt.NoFocus)
 
-        # add form elements to layout
+        # create back button for returning to menu
+        back_btn = QPushButton("Back")
+        back_btn.clicked.connect(lambda: self.back_signal.emit())
+        # fires clicked signal on enter
+        back_btn.setAutoDefault(True)
+        back_btn.setFocusPolicy(Qt.StrongFocus)
+
+
+    # add form elements to layout
         form_layout.addRow("username", self.username_input_field)
         form_layout.addRow("password", self.password_input_field)
         form_layout.addRow(signin_button)
         form_layout.addRow(self.form_info)
+        form_layout.addRow(back_btn)
+        l, t, b, r = form_layout.getContentsMargins()
+        form_layout.setContentsMargins(l, 50, b, r)
+
+        # create form container
+        form_container = QWidget()
+        form_container.setMaximumWidth(Login.LOGIN_WIDTH)
+        form_container.setLayout(form_layout)
 
         # set layout of login widget
-        self.setLayout(form_layout)
+        login_layout = QVBoxLayout()
+        login_layout.setAlignment(Qt.AlignHCenter)
+        login_layout.addWidget(form_container)
+        self.setLayout(login_layout)
 
 
     # SIGNAL HANDLER METHODS
@@ -69,13 +105,15 @@ class Login(QWidget):
         # check valid username
         if not Login.check_username(username):
             print("username not valid")
-            self.form_info.setText("username \"%s\" invalid" % username)
+            self.form_info.setText("Username \"%s\" invalid. It has to "
+                                   "be at least 3 characters long." % username)
             return None
 
         # check valid password
         if not Login.check_password(password):
             print("password not valid")
-            self.form_info.setText("password invalid")
+            self.form_info.setText("Password invalid. Password has to be at "
+                                   "least 5 characters long.")
             return None
         
 
@@ -107,7 +145,7 @@ class Login(QWidget):
 
             # if user cancels, close modal
             if not modal_dialog.exec():
-                self.form_info.setText("Account creation disapproved by user")
+                self.form_info.setText("Account creation cancelled.")
                 # exit sign in validation
                 return None
 

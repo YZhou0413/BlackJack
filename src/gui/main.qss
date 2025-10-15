@@ -25,6 +25,10 @@ QPushButton::hover {
     background-color: #2e9522;
 }
 
+QPushButton::focus {
+    border: 1px solid #9cb01c
+}
+
 QPushButton::disabled {
     background-color: #9c9c8c;
     color: #706b4d;
@@ -79,13 +83,23 @@ QPushButton[role="exit-button"]::hover {
 }
 
 /* ==== LOGIN styling ==== */
-Login QPushButton {
+Login QPushButton[role="sign-in"] {
     background-color: #ffe43a;
     color: #552510;
+    height: 26px;
 }
 
-Login QPushButton::hover {
+Login QPushButton[role="sign-in"]::focus {
+    border: 1px solid #552510;
+}
+
+Login QPushButton[role="sign-in"]::hover {
     background-color: #FFE858;
+}
+
+Login QLineEdit {
+    height: 26px;
+    font-size: 20px;
 }
 
 /* ==== PLACE BET PAGE styling ==== */

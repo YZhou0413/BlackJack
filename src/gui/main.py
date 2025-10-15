@@ -81,6 +81,8 @@ class MainWindow(QMainWindow):
 
         # connect signin button on login page with place bet view
         self.login.send_user_info_to_main_signal.connect(self.init_game_with_given_user)
+        # connect back button with menu
+        self.login.back_signal.connect(self.show_menu)
 
         # connect new game button post game with place bet view
         self.game_ui.new_game_signal.connect(self.init_game_with_given_user)
@@ -123,6 +125,7 @@ class MainWindow(QMainWindow):
     # sets login page as current page
     def open_login_view(self):
         self.pages.setCurrentWidget(self.login)
+        self.login.username_input_field.setFocus()
 
     # sets place bet page as current page
     def open_place_bet_view(self):
@@ -135,7 +138,7 @@ class MainWindow(QMainWindow):
 
     def show_menu(self):
         """Zeige das Menü (erste Seite)."""
-        self.pages.setCurrentIndex(0)
+        self.pages.setCurrentWidget(self.menu)
 
     def open_scoreboard_view(self):
         self.scoreboard.load_scores()
@@ -146,28 +149,25 @@ class MainWindow(QMainWindow):
         
     # sets menu as current page (post game)
     def open_menu_after_game(self):
-        self.show_menu()
-        
-    def show_menu(self):
 
         self.pages.removeWidget(self.login)
         self.pages.removeWidget(self.place_bet)
 
-        
         self.login = Login()
         self.place_bet = PlaceBet()
 
         self.pages.addWidget(self.login)
         self.pages.addWidget(self.place_bet)
 
+        # reapply slots
         self.login.send_user_info_to_main_signal.connect(self.init_game_with_given_user)
+        self.login.back_signal.connect(self.show_menu)
         self.place_bet.open_game_view_signal.connect(self.switch_from_place_bet_to_game_ui)
 
         self.game = None
         self.cur_player = None
 
-        self.pages.setCurrentWidget(self.menu)
-
+        self.show_menu()
 
 
 def run():
