@@ -158,6 +158,7 @@ class Game(QObject):
             print("YOU LOST! NO MONEY LEFT")
             return
         self.player.score -= self.bet
+        self.save_score()
         self.phase_up()
         self.start_game()
 
