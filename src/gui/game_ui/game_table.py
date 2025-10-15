@@ -53,12 +53,13 @@ class GameTable(QWidget):
         #---- setup middle widget ----
         # controls widget containing status info and player action buttons
         self.controls = QWidget()
-        self.controls.setMaximumHeight(170)
+        self.controls.setMaximumHeight(140)
 
         # status field
         self.status_info_field = QLabel("It's your turn!")
-        self.status_info_field.setAlignment(Qt.AlignLeft)
-        self.status_info_field.setFixedSize(QSize(190, 50))
+        self.status_info_field.setAlignment(Qt.AlignCenter)
+        self.status_info_field.setMinimumHeight(50)
+        self.status_info_field.setFixedWidth(180)
 
         # create widget for switch between action buttons and game end buttons
         self.button_stack = ButtonsStack()
@@ -236,6 +237,7 @@ class GameTable(QWidget):
         self.dealer_area.card_widget.reveal_dealer_second_card()
 
 
+    # activate ai driven player
     def on_ai_clicked(self):
         # start AI only if not already running and we have a game
         if self._ai_running or self.game is None:
@@ -301,20 +303,12 @@ class GameTable(QWidget):
     #---- game end methods ----
 
     def on_new_game(self):
-        # todo: connect to backend (reset game instance)
-
-        # reset buttons and status message
+        # initialise game
         self.game.initialize_game()
-        
-        
+        # reset ui elements
         self.reset_ui()
+        # fire new game signal for opening place bet page
         self.new_game_signal.emit(self.game.player.name)
-
-        # show place bet page like after sign in
-        print("player name on new game", self.game.player.name)
-        # todo fixbug: "Tester" is returned but should be
-        #  name of logged in user
-        # self.new_game_signal.emit(self._player.name)
 
 
     def on_exit_to_menu(self):

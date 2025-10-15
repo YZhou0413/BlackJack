@@ -136,6 +136,18 @@ QWidget[role="user-data"] {
     color: #d3da13;
 }
 
+/* ==== GAME TABLE styling ==== */
+QWidget[role="stats"] {
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background-color: #1B4C15;
+}
+
+QGraphicsView {
+    background: transparent;
+    border: 4px solid #2a6223;
+    border-radius: 10px;
+}
 
 
 
