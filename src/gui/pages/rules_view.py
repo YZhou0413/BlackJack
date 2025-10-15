@@ -1,7 +1,7 @@
 import sys
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextBrowser, QPushButton
 from PySide6.QtGui import QFont
-from PySide6.QtCore import QSize, Signal
+from PySide6.QtCore import QSize, Signal, Qt
 import markdown
 
 class RuleWidget(QWidget):
@@ -14,9 +14,11 @@ class RuleWidget(QWidget):
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
 
+        # create back button for returning to menu
         back_btn = QPushButton("Back")
         back_btn.clicked.connect(lambda: self.back_signal.emit())
-        main_layout.addWidget(back_btn)
+        back_btn.setFocusPolicy(Qt.StrongFocus)
+        back_btn.setAutoDefault(True)
 
         page_widget = QWidget(self)
         page_layout = QVBoxLayout(page_widget)
@@ -30,6 +32,8 @@ class RuleWidget(QWidget):
 
         page_layout.addWidget(text_browser)
         main_layout.addWidget(page_widget)
+        main_layout.addWidget(back_btn)
+
 
     def load_markdown_file(self, browser, file_path):
         try:
