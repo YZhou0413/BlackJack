@@ -138,6 +138,11 @@ class PlaceBet(QWidget):
 
     @new_min_bal.setter
     def new_min_bal(self, new_balance):
+        """
+        Updates new minimum balance value and the displayed value.
+        :param new_balance: the given min balance
+        :return: None
+        """
         self._new_min_bal = new_balance
         self.user_min_bal_field.setText(str(self._new_min_bal))
 
@@ -147,6 +152,12 @@ class PlaceBet(QWidget):
 
     @current_balance.setter
     def current_balance(self, new_balance):
+        """
+        Updates balance and displayed balance value.
+
+        :param new_balance: new balance
+        :return: None
+        """
         self._current_balance = new_balance
         self.user_balance_field.setText(str(self._current_balance))
 

@@ -30,14 +30,15 @@ class GameTable(QWidget):
         super().__init__()
         self.setMaximumSize(QSize(GameTable.WINDOW_FIXED_WIDTH, GameTable.WINDOW_FIXED_HEIGHT))
 
-        # references to dummy player and dummy dealer for testing
-        # todo: get references from game instance
+        # references to game, player and dealer instance
         self._game = None
-        #TODO: we should somehow remove these dummy items, cuz they might cause unexpected bugs and just intialize with Nones
-        self._player = dummy_player()
-        self._dealer = dummy_dealer()
+        self._player = None
+        self._dealer = None
+
+        # setup game table ui
         self.setup_ui()
 
+        # setup timer for ai player
         self._ai_timer = QTimer(self)
         self._ai_timer.setInterval(1000)
         self._ai_timer.timeout.connect(self._ai_step)
@@ -62,8 +63,6 @@ class GameTable(QWidget):
 
         # create widget for switch between action buttons and game end buttons
         self.button_stack = ButtonsStack()
-        # show border around widget rectangles for showing layout
-        # self.setStyleSheet("border: 1px solid red")
 
         # -- setup button slots
         # action buttons
@@ -113,7 +112,11 @@ class GameTable(QWidget):
     
     
     def update_game_info(self):
-        #this function pass in-game property and user objs to the game table ui, also bound the signals to functions
+        """
+        this function pass in-game property and user objs to the game table ui, also bound the signals to functions
+
+        :return: None
+        """
         self.dealer_area.owner = self.game.dealer
         self.player_area.owner = self.game.player
         
@@ -132,26 +135,37 @@ class GameTable(QWidget):
 
     # display winner and post game buttons
     def display_endgame_ui(self):
-        #check status of players, display end game ui
+        """
+        Determines winner and displays and according status info together with the
+        post game buttons.
 
-        # get player status and display winner message in status info
-        # also grey out loser's gametable area
+        :return: None
+        """
+        # get dealer's and player's busted states
         dealer_busted = self.game.dealer_is_busted
         player_busted = self.game.player_is_busted
 
+        # Create fitting status message
         match self.game.player.status:
+            # if user wins
             case "WIN":
                 message = "Dealer's Bust" if dealer_busted else "Your hand is higher"
                 message += "\n\nYou win, Congrats!"
+                # grey out dealer's gametable area
                 self.dealer_area.grey_out()
+            # if user loses
             case "LOST":
                 message = "Bust" if player_busted else "Dealer's hand is higher"
                 message += "\n\nYou lose!"
+                #grey out loser's gametable area
                 self.player_area.grey_out()
+            # if it's push
             case "PUSH":
                 message = "Push\n\nYou've regained your bet :)"
             case _:
+                # message to be displayed, if no other case matches
                 message = "Something went wrong.\nPlease consult the Dev Team"
+
         # update game status message
         self.status_info_field.setText(message)
 
@@ -160,8 +174,12 @@ class GameTable(QWidget):
 
     
     # INSTANCE METHODS
-    # let user draw card and display card in the gui
     def player_draw_card_use_hit(self):
+        """
+        Lets user draw card and displays the card in the gui.
+
+        :return: None
+        """
         self.game.btn_hit_on_click()
         new_card = self.game.player.hand[-1]
         # add to player hand UI
@@ -172,8 +190,12 @@ class GameTable(QWidget):
             self.player_area.grey_out()
             self.button_stack.disable_action_buttons()
 
-    # renders initial hands of dealer and user
     def render_initial_hands(self):
+        """
+        Renders initial hands of dealer and user.
+
+        :return: None
+        """
         #---- render DEALER hand ----
         dealer_cards_view = self.dealer_area.card_widget
         dealer_hand = self.dealer_area.owner.hand
@@ -188,6 +210,12 @@ class GameTable(QWidget):
 
     
     def stand(self):
+        """
+        Ends player's turn, disable all player action buttons and start
+        turn of the dealer.
+
+        :return: None
+        """
         #when stand is clicked, evolve from player turn to dealer turn
         self.game.btn_stand_on_click()
         self.button_stack.disable_action_buttons()
@@ -199,11 +227,19 @@ class GameTable(QWidget):
     
     #dealer turn is now managed by the following funcs
     def dealer_turn_start(self):
-        #maybe here to check first if the hand is bigger than user to decide continue draw or not
+        """
+        Starts dealer's turn. This method starts a timer and call's the dealer_draw() method
+        from class Game after the specified timeout.
+        The timer ensures, that drawn cards aren't displayed all at once, but
+        back to back, so that the user can follow more easily.
+
+        :return: None
+        """
+        # if dealer's hand is higher than or equal to user's hand and dealer has more than 17..
         if self.game.calculate_hand(self.game.dealer) >= self.game.calculate_hand(self.game.player) \
             and self.game.calculate_hand(self.game.dealer) >= 17:
+                #... end dealer's turn
                 self.dealer_finished()
-
 
         # start drawing
         self.dealer_timer = QTimer()
@@ -211,14 +247,24 @@ class GameTable(QWidget):
         self.dealer_timer.timeout.connect(self.game.dealer_draw)
         self.dealer_timer.start()
 
-    #render after a new card is added to dealer hand
     def render_after_dealer_draw_new_card(self):
+        """
+        Renders the card, the dealer has drawn.
+
+        :return: None
+        """
         new_card = self.game.dealer.hand[-1]
         self.dealer_area.card_widget.add_card_to_view(new_card, owner='dealer')
         self.dealer_area.card_widget.viewport().update()
 
     #moved the phase up to end game from game to ui
     def dealer_finished(self):
+        """
+        Stops the dealer's card delay timer, calculates the winner
+        and displays the endgame ui.
+
+        :return: None
+        """
         if getattr(self, 'dealer_timer', None):
             if self.dealer_timer.isActive():
                 self.dealer_timer.stop()
@@ -229,17 +275,27 @@ class GameTable(QWidget):
         self.display_endgame_ui()
 
 
-    # shorthand function for calling CardView method
     def reveal_dealer_card(self):
+        """
+        Reveals the second card of the dealer.
+
+        :return: None
+        """
         self.dealer_area.card_widget.reveal_dealer_second_card()
 
 
-    # activate ai driven player
     def on_ai_clicked(self):
+        """
+        Activates the ai player.
+
+        :return: None
+        """
         # start AI only if not already running and we have a game
         if self._ai_running or self.game is None:
             return
+        # display fitting status message
         self.status_info_field.setText("AI is playing for you now!")
+        # disable all action buttons
         self.button_stack.disable_action_buttons()
         self._ai_running = True
         # run one immediate step for responsiveness, then continue on timer
@@ -249,6 +305,11 @@ class GameTable(QWidget):
 
 
     def _ai_step(self):
+        """
+        Lets ai decide to stand or hit.
+
+        :return: None
+        """
         # guard
         if not self._ai_running or self.game is None:
             self._stop_ai()
@@ -288,6 +349,10 @@ class GameTable(QWidget):
 
 
     def _stop_ai(self):
+        """
+        Stops the ai mode.
+        :return: None
+        """
         if self._ai_timer.isActive():
             self._ai_timer.stop()
         self._ai_running = False
@@ -298,6 +363,10 @@ class GameTable(QWidget):
     #---- game end methods ----
 
     def on_new_game(self):
+        """
+        Starts a new game.
+        :return: None
+        """
         # initialise game
         self.game.initialize_game()
         # reset ui elements
@@ -307,6 +376,11 @@ class GameTable(QWidget):
 
 
     def on_exit_to_menu(self):
+        """
+        Returns the user to menu.
+
+        :return: None
+        """
         # fire open menu signal
         self.exit_to_menu_signal.emit()
     
@@ -315,6 +389,11 @@ class GameTable(QWidget):
 
 
     def reset_ui(self):
+        """
+        Resets ui elements of the game table to be ready for the next game round.
+
+        :return: None
+        """
         # switch back to player action buttons
         self.player_area.reverse_gray_out()
         self.dealer_area.reverse_gray_out()

@@ -14,6 +14,7 @@ class Menu(QWidget):
     open_login_signal = Signal()
     open_scoreboard_signal = Signal()
     open_rule_view_signal = Signal()
+
     # CONSTRUCTOR
     def __init__(self):
         super().__init__()
@@ -67,13 +68,27 @@ class Menu(QWidget):
 
     # SIGNAL HANDLER METHODS
     def open_login_view(self):
+        """
+        Sends signal for switching to menu page.
+        :return: None
+        """
         self.open_login_signal.emit()
 
     def open_rules_view(self):
+        """
+        Sends signal for switching to rules page.
+
+        :return: None
+        """
         self.open_rule_view_signal.emit()
 
     def open_scoreboard_view(self):
+        """
+        Sends signal for switching to scoreboard page
+        :return: None
+        """
         self.open_scoreboard_signal.emit()
-        
-    def exit_game(self):
+
+    @staticmethod
+    def exit_game():
         sys.exit()

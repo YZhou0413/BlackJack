@@ -69,7 +69,7 @@ class Login(QWidget):
         back_btn.setFocusPolicy(Qt.StrongFocus)
 
 
-    # add form elements to layout
+        # add form elements to layout
         form_layout.addRow("username", self.username_input_field)
         form_layout.addRow("password", self.password_input_field)
         form_layout.addRow(signin_button)
@@ -160,38 +160,73 @@ class Login(QWidget):
 
 
     # BACKEND COMMUNICATION METHODS
-    # checks if an account with the given username already exists
     @staticmethod
     def check_username_exists(username):
+        """
+        Checks if an account with the given username already exists.
+
+        :param username: the given username
+        :return: True if username exists in database, else false.
+        """
         print("Check if username exists in database")
         return lgpd.user_exists(username)
 
-    # check if username and password match
     @staticmethod
     def check_correct_credentials(username, password):
+        """
+        Checks if username and password match.
+
+        :param username: given username
+        :param password: given password
+        :return: True if username and password match, else return False
+        """
         print("Checks if password is correct")
         
         return lgpd.verify_user(username, password)
 
 
-    # trigger account creation
     @staticmethod
     def trigger_account_creation(username, password):
+        """
+        Triggers the account creation with the given username and password.
+        :param username: the given username
+        :param password: the given password
+        :return: None
+        """
         lgpd.create_user(username, password, start_score=1000)
 
     # HELPER METHODS
     # checks if username has valid format
     @staticmethod
     def check_username(username):
+        """
+        Checks if username has valid format.
+        In this case any username longer than 2 characters is in a
+        valid format. For the scope of the course, this level of
+        safety should be sufficient.
+
+        :param username: given username
+        :return: True, if the given username is longer than
+        2 character, else return False
+        """
         if username is None:
             return False
         if len(username) < 2:
             return False
         return True
 
-    # checks if password has valid format
     @staticmethod
     def check_password(password):
+        """
+        Checks if password has valid format.
+        In this case any username longer than 5 characters is in a
+        valid format. For the scope of the course, this level of
+        safety should be sufficient.
+
+        :param password: the given password
+        :return: True, if the password is longer than 5 characters,
+        else False
+        """
         if password is None:
             return False
         if len(password) < 5:

@@ -1,13 +1,23 @@
 from PySide6.QtWidgets import QLabel, QSizePolicy
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
+from src.core.game import Card
 import os
 
-# gets the filename of the image fitting the specified card
 def get_path_from_card(card):
     """
-    :param card: the given card of class Card
-    :return: the local filename of the image matching the given card
+    gets the filename of the image fitting the specified card
+    :param card: the given card instance of class Card
+    :return: string of the local filename of the image matching the given card
+
+    >>> get_path_from_card(Card("3", "Hearts"))
+    '/3_of_hearts.png'
+
+    >>> get_path_from_card(Card("A", "Spades"))
+    '/ace_of_spades.png'
+
+    >>> get_path_from_card(Card("J", "Diamonds"))
+    '/jack_of_diamonds2.png'
     """
 
     # get suit and rank of given card
@@ -88,8 +98,12 @@ class CardUI(QLabel):
 
 
     # INSTANCE METHODS
-    # sets pixmap of this widget
     def set_pixmap_from_path(self, img_path):
+        """
+        sets the pixmap of this widget from a path to the image file
+        :param img_path: given path to the image
+        :return: None
+        """
         if not os.path.exists(img_path):
             print("File not found:", img_path)
         pixmap = QPixmap(img_path)
@@ -98,3 +112,8 @@ class CardUI(QLabel):
         pixmap = pixmap.scaledToHeight(CardUI.CARD_HEIGHT, mode=Qt.TransformationMode.SmoothTransformation)
         self.setPixmap(pixmap)
         self.resize(pixmap.size())
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(verbose=True)
