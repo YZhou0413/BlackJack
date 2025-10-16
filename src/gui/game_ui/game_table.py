@@ -282,6 +282,7 @@ class GameTable(QWidget):
 
         elif res == "stand":
             self._stop_ai()
+            self.button_stack.disable_action_buttons()
             self.stand()
             return
 
