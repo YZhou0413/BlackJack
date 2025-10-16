@@ -1,7 +1,7 @@
 ### How to run the game code:
 #### dependencies:
 - python version: 3.13
-- please run `pip3 install -r /path/to/requirements.txt` to install externe libraries
+- please run `pip3 install -r requirements.txt` to install external libraries
 #### do this in the root folder `python-winter-2526-sopro-group7` in your terminal to start the game:
 - for Unix system: `python3 -m blackjack`
 - for Windows system: `py -m blackjack`
