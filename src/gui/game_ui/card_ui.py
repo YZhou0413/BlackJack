@@ -52,9 +52,7 @@ def get_path_from_card(card):
 # Represents a card ui instance
 class CardUI(QLabel):
     PNG_PATH = os.path.abspath("./src/gui/PNG-cards") #path was problematic, fixed
-    # full path to front of image (missing part added in constructor)
-    FRONT_PATH = ""
-    # full path to back of card image
+    # full path to card back image
     BACK_PATH = PNG_PATH + "/back.png"
     # height of card ui widget
     CARD_HEIGHT = 120
@@ -67,7 +65,7 @@ class CardUI(QLabel):
         # set visibility of playing card
         self._revealed = True
 
-        # full path to front of image (missing part added in constructor)
+        # full path to card front image
         self.front_path = CardUI.PNG_PATH + get_path_from_card(card)
 
         # set current card image path
