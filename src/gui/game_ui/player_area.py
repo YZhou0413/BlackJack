@@ -47,7 +47,7 @@ class PlayerHandWidget(QWidget):
 
         # center stats
         for child in self.stats_area.findChildren(QLabel):
-            child.setAlignment(Qt.AlignCenter)
+            child.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Add stats area to layout
         self.hLayout.addWidget(self.stats_area)
@@ -58,6 +58,9 @@ class PlayerHandWidget(QWidget):
 
     #update display:
     def update_player_info(self):
+        """
+        get player info and set to text fields
+        """
         if isinstance(self.owner, Dealer):
             self.name_tag.setText("Dealer")
             self.score_tag.setText("")
@@ -70,6 +73,9 @@ class PlayerHandWidget(QWidget):
     # used this method for player lose scenario, since removing the action buttons
     # leaves the player unactionable
     def grey_out(self):
+        """
+        activate a overlay for the player area at the loser's side to make it clear who lost
+        """
         if not hasattr(self, "_overlay_widget"):
         # create a QWidget covering the entire view, so that our user know that they cant draw anymore
             self._overlay_widget = QWidget(self)
@@ -82,7 +88,11 @@ class PlayerHandWidget(QWidget):
 
         # force repaint
         self._overlay_widget.update()
+        
     def reverse_gray_out(self):
+        """
+        triggered when new game is clicked, the overlay for loser will be hidden
+        """
         if hasattr(self, "_overlay_widget"):
             self._overlay_widget.hide()
 

@@ -28,6 +28,9 @@ class CardView(QGraphicsView):
         self.setScene(self.scene_)
 
     def reset_view(self):
+        """
+        triggered after new game is clicked, create a new scence obj
+        """
         # create new scene for automatic centering behaviour
         self.scene_ = QGraphicsScene(self)
         self.setScene(self.scene_)
@@ -35,6 +38,9 @@ class CardView(QGraphicsView):
 
     # adds a card to this cardview 
     def add_card_to_view(self, card, owner='user'):
+        """
+        triggered when received a new card signal, add a new card widget by default to the users hand. When owner is specified as dealer, then add a new card widget to dealer's hand.
+        """
         #decide which proxy list to use
         proxy_list = self._dealer_proxies if owner == 'dealer' else self._user_proxies
         position_id = len(proxy_list)
@@ -47,6 +53,9 @@ class CardView(QGraphicsView):
         return card_scene_item
 
     def initialize_dealer_hand(self, dealer_hand):
+        """
+        initialized the dealer's card in dealer's proxy list, set the card attr _revealed for the 2. card to False to let it render as a back at start of the game 
+        """
         self._dealer_proxies.clear()
         for i, card in enumerate(dealer_hand):
             proxy = self.add_card_to_view(card, owner='dealer')
@@ -56,11 +65,17 @@ class CardView(QGraphicsView):
                 proxy.widget().adjustSize()
 
     def initialize_user_hand(self, user_hand):
+        """
+        initialized the dealer's card in player's proxy list
+        """
         self._user_proxies.clear()
         for card in user_hand:
             self.add_card_to_view(card, owner='user')
 
     def reveal_dealer_second_card(self):
+        """
+        triggered when received dealer_round_start signal, will set the attr _revealed of the dealer's 2. initial card to True and force the view to update.
+        """
         if len(self._dealer_proxies) > 1:
             second_proxy = self._dealer_proxies[1]
             second_proxy.widget().revealed = True

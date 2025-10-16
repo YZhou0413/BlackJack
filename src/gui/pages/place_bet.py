@@ -34,7 +34,6 @@ class PlaceBet(QWidget):
         # todo: fetch user data
         self.username = "blackjackwinner2010"
         # new minimal balance
-        # todo: fetch user data
         self._new_min_bal = 900
         # current user balance
         self._current_balance = 900
@@ -43,13 +42,13 @@ class PlaceBet(QWidget):
         #----elements of HEADER ----
         page_header = QLabel("Place your bet!")
         page_header.setProperty("role", "header")
-        page_header.setAlignment(Qt.AlignCenter)
+        page_header.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         #---- textfields and buttons of CENTER ----
         # create field displaying placed bet
         self.placed_bet_field = QLineEdit("100$")
         self.placed_bet_field.setProperty("role", "bet-field")
-        self.placed_bet_field.setAlignment(Qt.AlignCenter)
+        self.placed_bet_field.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.placed_bet_field.setReadOnly(True)
 
         # create increase bet button
@@ -125,7 +124,7 @@ class PlaceBet(QWidget):
 
         #---- create page layout----
         placebet_layout = QVBoxLayout()
-        placebet_layout.setAlignment(Qt.AlignHCenter)
+        placebet_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         placebet_layout.addWidget(page_header)
         placebet_layout.addWidget(center_container)
         placebet_layout.addWidget(footer_container)
@@ -180,6 +179,9 @@ class PlaceBet(QWidget):
 
     # INSTANCE METHODS
     def increase_bet(self):
+        """
+        triggered when btn increase_bet is pushed, will update the bet attr and update new_min_bal display
+        """
         self.placed_bet += 100
         self.new_min_bal -= 100
         print("bet increased by 100")
@@ -193,6 +195,9 @@ class PlaceBet(QWidget):
             self.decrease_bet_button.setEnabled(True)
 
     def decrease_bet(self):
+        """
+        triggered when btn decrease_bet is pushed, will update the bet attr and new_min_bal display
+        """
         self.placed_bet -= 100
         self.new_min_bal += 100
         print("bet decreased by 100")
@@ -207,9 +212,15 @@ class PlaceBet(QWidget):
 
     # updates displayed bet value
     def update_placed_bet_field(self):
+        """
+        update text field placed bet
+        """
         self.placed_bet_field.setText(str(self._placed_bet) + "$")
 
     def update_user_balance_field(self):
+        """
+        check user balance, update user balance text field and buttons on UI
+        """
         score = self.game.player.score
         bet = self.placed_bet
 
@@ -244,11 +255,17 @@ class PlaceBet(QWidget):
 
         
     def update_user_name(self):
+        """
+        update user name displayed on UI
+        """
         if self.game is not None:
             self.username = self.game.player.name
             self.user_name_field.setText(self.username)
 
     def lock_in_bet(self):
+        """
+        triggered when lock in btn is clicked, pass the bet attr to game instance
+        """
         print("bet locked in, starting game...")
         print("(new balance saved in database)")
         self.game.bet = self.placed_bet
@@ -259,6 +276,9 @@ class PlaceBet(QWidget):
         self.open_game_view_signal.emit()
         
     def refresh_page(self):
+        """
+        refresh place bet UI for new round, 
+        """
         self.update_user_name()
         if self.game.player.score < self.placed_bet:
             self.placed_bet = PlaceBet.DEFAULT_START_BET
