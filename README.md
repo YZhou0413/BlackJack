@@ -45,7 +45,8 @@ root
 │   │   │   ├── place_bet.py # user place bet widget 
 │   │   │   ├── rules_view.py # rule display widget
 │   │   │   └── scoreboard.py # scoreboard display widget
-│   │   └──  PNG-cards # cards asset
+│   │   ├── PNG-cards # cards asset
+│   │   └── app-icon # app icon files
 │   └──  __init__.py
 └── test # test modules
     ├── conftest.py # test fixtures
