@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QStackedWidget
 )
+from PySide6.QtGui import QIcon
 from src.gui.pages.menu import Menu
 from src.gui.game_ui.game_table import GameTable
 from src.gui.login.login import Login
@@ -173,6 +174,9 @@ class MainWindow(QMainWindow):
 def run():
     # create QApp instance
     app = QApplication([])
+
+    # load app icon
+    app.setWindowIcon(QIcon("src/gui/app-icon/cards-98382_512x512.png"))
 
     # create and show main window
     window = MainWindow()
