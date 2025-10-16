@@ -291,10 +291,6 @@ class GameTable(QWidget):
         if self._ai_timer.isActive():
             self._ai_timer.stop()
         self._ai_running = False
-        # if player's still in-game, re-enable controls
-        if self.game and getattr(self.game.player, "status", "") == "in-game":
-            self.button_stack.enable_action_buttons()
-            self.status_info_field.setText("Your turn")
 
 
 
