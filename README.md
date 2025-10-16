@@ -1,33 +1,55 @@
-###### python-winter-2526-sopro-group7
+### How to run the game code:
+#### dependencies:
+- python version: 3.13
+- please run `pip3 install -r /path/to/requirements.txt` to install externe libraries
+#### do this in the root folder `python-winter-2526-sopro-group7` in your terminal to start the game:
+- for Unix system: `python3 -m blackjack`
+- for Windows system: `py -m blackjack`
+#### for in-game operations, please refer to the [rules](src/gui/pages/rules.md)
 
-# 🃏 Let's play Blackjack!
-### 🎲 What is Blackjack and what are the rules?
-Blackjack is a famous casino card game with following aspects:
-  - You play against a dealer.
-  - You both get two cards in hand, one card in the dealer's hand will be revealed and the other one is hidden at the beginning of the game.
-  - Your goal is to make the sum of cards in your hand to get as close as possible to 21, but not over 21.
-#### ♣️ In your turn
-In your turn, you can **hit** to draw another card from the deck. But be careful - if your new card makes your hand sum bigger than 21, then you're busted and it's a **win for the dealer.**
+### Role distributions:
+- Frontend: Abigail MAJOR
+- Backend: Nils MAIER
+- Integration & Test: Yining ZHOU
 
-When you are confident with your hand, you can **stand** to end your turn.
-#### ♥️ Now it's the dealer's turn
-If you're busted, the dealer will just reveal his second card and claim the victory.
-
-Otherwise, the dealer will start drawing cards, until they decide to stand or they bust.
-#### ♠️ When nobody busted, who has won?
-  - Who has a higher sum of their hand has won. 😎
-  - If the sum of both your hands is the same, it's a push and you get your bet back. 💰
+### repository structure:
+```bash
+root
+├── blackjack # to mask the run command
+│   └── __main__.py
+├── src # game source code
+│   ├── core # core game logic & modules
+│   │   ├── cards.py # card module 
+│   │   ├── game.py # game logic
+│   │   ├── __init__.py
+│   │   ├── login_panda.py # communicate between game and user database
+│   │   └── player.py # in-game player module
+│   ├── gui # UI
+│   │   ├── game_ui # in-game UI
+│   │   │   ├── buttons_stack.py # buttons in game
+│   │   │   ├── card_ui.py # card display logic
+│   │   │   ├── card_view.py # card display view
+│   │   │   ├── game_table.py # game table ui
+│   │   │   ├── __init__.py
+│   │   │   ├── player_area.py # player side on the game table
+│   │   │   └── test_dummys.py # test dummies
+│   │   ├── __init__.py
+│   │   ├── login # login ui
+│   │   │   ├── __init__.py
+│   │   │   ├── login_approve_dialog.py # create new user dialog
+│   │   │   └── login.py # existing user login
+│   │   ├── main.py # main window
+│   │   ├── pages # widgets manager
+│   │   │   ├── __init__.py
+│   │   │   ├── menu.py # game menu widget
+│   │   │   ├── place_bet.py # user place bet widget 
+│   │   │   ├── rules_view.py # rule display widget
+│   │   │   └── scoreboard.py # scoreboard display widget
+│   │   └──  PNG-cards # cards asset
+│   └──  __init__.py
+└── test # test modules
+    ├── conftest.py # test fixtures
+    ├── test_game_unit.py 
+    └── test_win_lose.py # test game logic
+```
   
-### 🕹️ How to play in our console?
-#### ‼️ Please do this in the root folder `python-winter-2526-sopro-group7` in your terminal:  
-  - for unix system: `python3 -m blackjack`
-  - for windows system: `py -m blackjack`
-#### 🤔 Next, you can login or create a new account (Both via the login button)
-  - As new player, you can just put in a user name and a password (please memorize your password because we cant reset it for you), and confirm to create a new account. 
-
-    After the account creation, you will gain 1000 chips (or we call it score) to play your first round. 
-
-    Once you lost all chips in your account, you can't play the game anymore since you're broke, go touch some grass and quit gambling maybe.
-  - If you already have an account, just login with your credentials.
-#### 🎉 After login, just place your bet and enjoy the game! 
-

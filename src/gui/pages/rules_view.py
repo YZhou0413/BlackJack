@@ -27,7 +27,7 @@ class RuleWidget(QWidget):
 
         text_browser = QTextBrowser(page_widget)
 
-        self.load_markdown_file(text_browser, "./README.md")
+        self.load_markdown_file(text_browser, "./src/gui/pages/rules.md")
 
         page_layout.addWidget(text_browser)
         main_layout.addWidget(page_widget)

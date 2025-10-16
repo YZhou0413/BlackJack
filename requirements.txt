@@ -1,5 +1,6 @@
-PySide6==6.9.3
-PySide6_Addons==6.9.3
-PySide6_Essentials==6.9.3
-shiboken6==6.9.3
-markdown==3.9
+Markdown==3.9
+pandas==2.3.3
+pyside6==6.10.0
+pyside6_addons==6.10.0
+pyside6_essentials==6.10.0
+pytest==8.4.2
