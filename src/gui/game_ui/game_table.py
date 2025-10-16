@@ -214,13 +214,11 @@ class GameTable(QWidget):
     #render after a new card is added to dealer hand
     def render_after_dealer_draw_new_card(self):
         new_card = self.game.dealer.hand[-1]
-        print("Dealer drew:", new_card.rank, new_card.suit)
         self.dealer_area.card_widget.add_card_to_view(new_card, owner='dealer')
         self.dealer_area.card_widget.viewport().update()
 
     #moved the phase up to end game from game to ui
     def dealer_finished(self):
-        self.game.print_card(self.game.dealer)
         if getattr(self, 'dealer_timer', None):
             if self.dealer_timer.isActive():
                 self.dealer_timer.stop()

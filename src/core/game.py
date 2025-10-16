@@ -15,18 +15,20 @@ from src.core.cards import Card
 import random
 import src.core.login_panda as login_panda
 
+# Dummy player used for initialization/testing
 dummy_player = Player("dummy")
 
 
-
 class Game(QObject):
-    dealer_drawn_card = Signal() #dealer draw, add cards to ui until endgame triggered
+    # Signals for UI updates and turn progression
+    dealer_drawn_card = Signal()
     dealer_finished_turn = Signal()
     card_reveal_signal = Signal()
     test_player_draw_signal = Signal()
     fixed_start = Signal()
 
     gamer_stat = ["START", "WIN", "LOST", "BUST", "PUSH", "in-game"]
+
     def __init__(self, user):
         super().__init__()
         self.deck = self.create_deck()
@@ -35,74 +37,62 @@ class Game(QObject):
         self.dealer.hand = []
         self.dealer.status = "START"
         self._dealer_is_busted = False
-        self.player = user #make sure is a player obj
+
+        self.player = user
         self.player.hand = []
         self.player.status = "START"
         self._player_is_busted = False
+
         self.bet = 100
         self.ai_play = False
         self.phase = 0
+
         self.initialize_game()
 
-    # property methods for player and dealer busted
+    # ------------------ Property methods ------------------
+
     @property
     def player_is_busted(self):
         return self._player_is_busted
 
     @player_is_busted.setter
     def player_is_busted(self, new_busted_state):
-        # only trigger side effects if changing from False to True
         if not self._player_is_busted and new_busted_state:
-            # fire dealer card reveal signal
             self.card_reveal_signal.emit()
-
-        # update player busted state
         self._player_is_busted = new_busted_state
 
     @property
     def dealer_is_busted(self):
         return self._dealer_is_busted
 
-    '''------------------Print Card------------------'''
+    # ------------------ Debug ------------------
 
-    def print_card(self, hand_owner):
-        if hasattr(hand_owner, "name"):
-            print(hand_owner.name, [(card.rank, card.suit) for card in hand_owner.hand])
-            print("Your current Hand value is: ", self.calculate_hand(hand_owner))
-            print("\n")
-        else:
-            print("deck", [(card.rank, card.suit) for card in hand_owner])
-            print(len(hand_owner))
-            
     def test_hand(self, hand_owner, cardRank):
         hand_owner.hand.append(Card(cardRank, "hearts"))
         if type(hand_owner) is Dealer:
             self.dealer_drawn_card.emit()
         else:
             self.test_player_draw_signal.emit()
-        
 
-    '''------------------Deck------------------'''
+    # ------------------ Deck ------------------
 
-    def create_deck(self):                                              #Creates Deck
+    def create_deck(self):
         deck = []
         for s in Card.SUITS:
             for r in Card.RANKS:
                 deck.append(Card(r, s))
         return deck
 
-    def shuffle_deck(self):                                             #Shuffles Deck
+    def shuffle_deck(self):
         random.shuffle(self.deck)
         
-    def draw_card(self):                                                #Draw Card
+    def draw_card(self):
         if self.deck:
             return self.deck.pop()
-        
 
-        
-    '''------------------Game start/reset------------------'''   
+    # ------------------ Game start/reset ------------------
 
-    def reset_round(self):                                              #resets all values --> create_deck() and shuffle_deck()
+    def reset_round(self):
         self.deck = self.create_deck()
         self.shuffle_deck()
         self.player.hand = []
@@ -111,123 +101,64 @@ class Game(QObject):
         self.dealer.status = "START"
         self.bet = 100
         self.phase = 0
-        print("Your current Score is: ", self.player.score)
-        print("Your bet for the next game is: ", self.bet)
-        print("\n")
 
-        print(r'If you want to bet more or less type "game.add_bet()" or "game.minus_bet()!')
-        print(r'If you want to let an AI play for you or want to toggle it off again type "game.toggle_ai()"')
-        print(r'When your happy with your bet and your AI mode type "game.place_bet()" to start the game!')
-        print("\n")
-        print("\n")
-
-
-    def initialize_game(self):                                          #New game / Start Game / Play Again  --> start_game() and place_bet() + / - and reset_round()
+    def initialize_game(self):
         self.reset_round()
 
-        
-    def start_game(self):                                               #Bet is Placed --> Deal Cards --> deal_initial_hands()        
+    def start_game(self):
         self.deal_initial_hands(self.player)
-        self.print_card(self.player)
-
         self.deal_initial_hands(self.dealer)
-        self.print_card(self.dealer)
-        
         self.fixed_start.emit()
-
-        print(r'If you want to hit (pull another card) type "game.add_on_click()"')
-        print(r'When your happy with your hand and want to end your turn type "game.player_stands()"')
-        print("\n")
-        print("\n")
-
         self.dealer.status = "in-game"
         self.player.status = "in-game"
-
-        if self.ai_play == True:
+        if self.ai_play:
             self.ai_plays()
 
-    def deal_initial_hands(self, hand_owner):                           #Cards gotten --> Stand / Hit Button possible
+    def deal_initial_hands(self, hand_owner):
         hand_owner.hand = [self.draw_card(), self.draw_card()]
 
+    # ------------------ Place bets <phase 0> ------------------
 
-
-    '''------------------Place bets <phase 0>------------------'''   
-
-    def place_bet(self):                                                #Places bet
+    def place_bet(self):
         if self.player.score == 0:
-            print("YOU LOST! NO MONEY LEFT")
             return
         self.player.score -= self.bet
         self.save_score()
         self.phase_up()
         self.start_game()
 
-    def add_bet(self):                                                  # + Button to higher bet
+    def add_bet(self):
         if self.player.score > self.bet:
             self.bet += 100
-            print("Your bet for the next game is: ", self.bet)
-            print("\n")
         else:
-            print("ur broke lol")
-            print("\n")
+            pass
 
-
-    def minus_bet(self):                                                # - Button to lower bet
+    def minus_bet(self):
         if self.bet > 100:
             self.bet -= 100
-            print("Your bet for the next game is: ", self.bet)
-            print("\n")
         else:
-            print("well... you have to bet at least something")
-            print("\n")
+            pass
 
+    # ------------------ Player actions <phase 1> ------------------
 
-        
-    '''------------------Player actions <phase 1>------------------'''   
-
-    def btn_hit_on_click(self):                                            #Hit --> draw_card() and if is_bust() --> dealer_draw()
+    def btn_hit_on_click(self):
         if self.phase != 1:
             return
 
-        # add new card to user's hand
         self.player.hand.append(self.draw_card())
 
-        # if user busts...
         if self.is_bust(self.player):
-            # ...update player bust state (triggers signal emit in setter)
             self.player_is_busted = True
             self.phase_up()
-
-            # fire finished turn of dealer and increment game phase
             self.dealer_finished_turn.emit()
             self.phase_up()
+            return
 
-            self.print_card(self.player)
-            #self.dealer_draw() #reveal dealer card -> dealer actions (for better ui display, this is removed from here)
-            #return
-
-        self.print_card(self.player)
-        print(r'If you want to hit (pull another card) type "game.add_on_click()"')
-        print(r'When you´re happy with your hand and want to end your turn type "game.player_stands()"')
-        print("\n")
-        print("\n")
-
-        
-    def btn_stand_on_click(self):                                            #Stand --> dealer_draw()
-        # trigger dealer card reveal
+    def btn_stand_on_click(self):
         self.card_reveal_signal.emit()
+        self.phase_up()
 
-        self.phase_up() #phase 2 -> dealer
-        # removed dealer_start_turn.emit(), because dealer_turn_start
-        # in gametable class can be called directly inside of stand()
-        self.print_card(self.player)
-        
-    
-
-        
-
-    
-    '''------------------Phase 2 Dealer------------------'''
+    # ------------------ Phase 2 Dealer ------------------
 
     def dealer_draw(self):
         if self.player.status == "BUST":
@@ -247,17 +178,12 @@ class Game(QObject):
         else:
             self.dealer_finished_turn.emit()
 
+    # ------------------ AI Plays ------------------
 
-
-    '''------------------AI Plays------------------'''
-
-    def toggle_ai(self):  
-        print(self.ai_play)                                              #toggles AI on button click
+    def toggle_ai(self):
         self.ai_play = (self.ai_play == False)
-        print("-----after-----")
-        print(self.ai_play)
     
-    def ai_play_step(self):                                              #AI Plays step by step
+    def ai_play_step(self):
         if getattr(self.player, "status", "") != "in-game":
             return ("noop", None)
 
@@ -270,22 +196,14 @@ class Game(QObject):
             if self.is_bust(self.player):
                 self.player_is_busted = True
                 self.phase_up()
-
-                self.print_card(self.player)
-                #self.dealer_draw() #reveal dealer card -> dealer actions (for better ui display, this is removed from here)
-                #return
                 return ("bust", card)
             return ("hit", card)
-
         else:
             return ("stand", None)
 
+    # ------------------ Outcome ------------------
 
-
-
-    '''------------------Outcome------------------'''
-
-    def calculate_hand(self, hand_owner):                               #Calculate hand for is_bust() and calc_winner()
+    def calculate_hand(self, hand_owner):
         score = 0
         aces = 0
         for c in hand_owner.hand:
@@ -302,98 +220,59 @@ class Game(QObject):
             aces -= 1
         return score
 
-
-    def is_bust(self, hand_owner):                                      #Test for calc_winner() and add_on_click()
+    def is_bust(self, hand_owner):
         if self.calculate_hand(hand_owner) > 21:
             self.update_status(hand_owner, "BUST")
             return True
         return False
 
-    def phase_up(self): #Phase Counter
+    def phase_up(self):
         self.phase += 1
 
-    def update_status(self, hand_owner, status):                        #Status Overview
+    def update_status(self, hand_owner, status):
         hand_owner.status = status
                 
-    def calc_winner(self):                                              #After Dealer Turn --> player.score gets adjusted if needed --> should be able to play again afterwards
+    def calc_winner(self):
         p_total = self.calculate_hand(self.player)
         d_total = self.calculate_hand(self.dealer)
 
-        if p_total > 21:                                                #Player Bust Dealer WIN
+        if p_total > 21:
             self.update_status(self.player, "LOST")
             self.update_status(self.dealer, "WIN")
             self.save_score()
-            print(" +----------------------------------+ \n |              U LOST              | \n +----------------------------------+")
-            print("\n")
-            print("New score: ", self.player.score)
-            print("\n")
-            print("\n")
-            print(r'If you want to play another game type "game.reset_round()"')
-            print("\n")
             return
         
-        if d_total > 21:                                                #Dealer Bust Player Win
+        if d_total > 21:
             self.update_status(self.player, "WIN")
             self.update_status(self.dealer, "LOST")
             self.player.score += self.bet * 2
             self.save_score()
-            print(" +---------------------------------+ \n |              U WON              | \n +---------------------------------+")
-            print("\n")
-            print("New score: ", self.player.score)
-            print("\n")
-            print("\n")
-            print(r'If you want to play another game type "game.reset_round()"')
-            print("\n")
-
             return
 
-        if p_total == d_total:                                          #PUSH
+        if p_total == d_total:
             self.update_status(self.player, "PUSH")
             self.update_status(self.dealer, "PUSH")
             self.player.score += self.bet
             self.save_score()
-            print(" +--------------------------------+ \n |              PUSH              | \n +--------------------------------+")
-            print("\n")
-            print("New score: ", self.player.score)
-            print("\n")
-            print("\n")
-            print(r'If you want to play another game type "game.reset_round()"')
-            print("\n")
             return
         
-        if p_total > d_total:                                           #Player Win
+        if p_total > d_total:
             self.update_status(self.player, "WIN")
             self.update_status(self.dealer, "LOST")
             self.player.score += self.bet * 2
             self.save_score()
-            print(" +---------------------------------+ \n |              U WON              | \n +---------------------------------+")
-            print("\n")
-            print("New score: ", self.player.score)
-            print("\n")
-            print("\n")
-            print(r'If you want to play another game type "game.reset_round()"')
-            print("\n")
             return
-        else:                                                           #Dealer Win
+        else:
             self.update_status(self.player, "LOST")
             self.update_status(self.dealer, "WIN")
-            print(" +----------------------------------+ \n |              U LOST              | \n +----------------------------------+")
             self.save_score()
-            print("\n")
-            print("New score: ", self.player.score)
-            print("\n")
-            print("\n")
-            print(r'If you want to play another game type "game.reset_round()"')
-            print("\n")
             return
 
+    # ------------------ Users ------------------
 
-    '''------------------Users------------------'''
-
-    def login_user(self, username, password):                           #User Login / Create
+    def login_user(self, username, password):
         username = str(username).strip()
         if not username or not password:
-            print("Username/Password empty.")
             return False
 
         if login_panda.user_exists(username):
@@ -402,54 +281,36 @@ class Game(QObject):
                 self.player.password = password
                 self.player.score = login_panda.get_score(username)
                 return True
-            print("Wrong Password.")
             return False
 
-        if login_panda.create_user(username, password, start_score = 1000):
+        if login_panda.create_user(username, password, start_score=1000):
             self.player.name = username
             self.player.password = password
             self.player.score = login_panda.get_score(username)
             return True
-        print("Error at User Creation.")
         return False
 
-
-    def logout_user(self):                                              #User Logout
+    def logout_user(self):
         if not getattr(self.player, "name", ""):
-            print("No logged in User.")
             return
         self.save_score()
         self.player.name = "dummy"
 
-
-    def save_score(self):                                               #Score Save
+    def save_score(self):
         name = getattr(self.player, "name", "")
         if not name:
-            print("No logged in User.")
             return
-
         try:
             login_panda.set_score(name, int(self.player.score))
-        except Exception as e:
-            print("Save Error:", e)
+        except Exception:
+            pass
 
-
-    def load_all_scores(self):                                           #Load all Scores
+    def load_all_scores(self):
         try:
-            return login_panda.list_scores(as_df = False)
+            return login_panda.list_scores(as_df=False)
         except Exception:
             return {}
 
 
-
-
 if __name__ == '__main__':
-    '''
-    write additional testing code here for things that don't work well as unit tests:
-    '''
-
-    # Example for how we might test your program:
-    print(" +---------------------------------------------------------+ \n |              ♠ ♣  B L A C K   J A C K  ♥ ♦              | \n +---------------------------------------------------------+")
-    print("\n")
-    game = Game(dummy_player)                                           # create new game
-    
+    game = Game(dummy_player)
