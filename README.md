@@ -7,10 +7,6 @@
 - for Windows system: `py -m blackjack`
 #### for in-game operations, please refer to the [rules](src/gui/pages/rules.md)
 
-### Role distributions:
-- Frontend: Abigail MAJOR
-- Backend: Nils MAIER
-- Integration & Test: Yining ZHOU
 
 ### repository structure:
 ```bash
