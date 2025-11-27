@@ -2,7 +2,7 @@
 #### dependencies:
 - python version: 3.13
 - please run `pip3 install -r requirements.txt` to install external libraries
-#### do this in the root folder `python-winter-2526-sopro-group7` in your terminal to start the game:
+#### do this in the root folder in your terminal to start the game:
 - for Unix system: `python3 -m blackjack`
 - for Windows system: `py -m blackjack`
 #### for in-game operations, please refer to the [rules](src/gui/pages/rules.md)
